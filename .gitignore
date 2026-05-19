@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# generated temp files
+podcast_segments/
+
+# large assets excluded from git
+*.pdf
+*.mp4
+*.m4a
+*.png
+Turning Boiler Scale into Washable Chalk.mp3

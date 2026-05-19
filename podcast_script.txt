@@ -1,0 +1,20 @@
+[Tingting] 欢迎来到分析化学速听播客。今天我们用十分钟，快速回顾溶解平衡、溶度积和沉淀相关高频考点。
+[Eddy (Chinese (China mainland))] 这期内容来自你当前资料夹的闪卡和题库，我会把核心公式和易错点讲清楚。
+[Tingting] 闪卡1，问题是：What solubility value (per 100g of water) typically classifies a substance as '難溶' (poorly soluble)?
+[Eddy (Chinese (China mainland))] 结论：Less than 0.01g.。记忆技巧是，先看数量级，再判断是难溶、微溶还是可溶。
+[Tingting] 闪卡2，问题是：What solubility range (per 100g of water) classifies a substance as '微溶' (slightly soluble)?
+[Eddy (Chinese (China mainland))] 结论：0.01g to 0.1g.。记忆技巧是，先看数量级，再判断是难溶、微溶还是可溶。
+[Tingting] 闪卡3，问题是：Term: Solubility Product (K_sp)
+[Eddy (Chinese (China mainland))] 结论：Definition: The equilibrium constant for the dissolution of a poorly soluble electrolyte in water at a specific temperature.。记忆技巧是，先看数量级，再判断是难溶、微溶还是可溶。
+[Tingting] 闪卡4，问题是：What is the relationship between solubility (x) and K_sp for an MA type electrolyte (e.g., BaSO_4)?
+[Eddy (Chinese (China mainland))] 结论：x = \sqrtK_sp.。记忆技巧是，先看数量级，再判断是难溶、微溶还是可溶。
+[Tingting] 练习1，题干要点：For a sparingly soluble electrolyte of the type MA_2, such as CaF_2, how is the molar solubility (s) related to the solubility product constant (K_sp)?。
+[Eddy (Chinese (China mainland))] 做题时优先写出平衡表达式，再代入 Ksp 与浓度关系。选项提示为：['text': 's = \\sqrtK_sp', 'isCorrect': False, 'rationale': 'This relationship is characteristic of MA type electrolytes where the cation an。
+[Tingting] 练习2，题干要点：Which phenomenon describes the increase in solubility of a precipitate when a strong electrolyte that does not share a common ion is added to the solution?。
+[Eddy (Chinese (China mainland))] 做题时优先写出平衡表达式，再代入 Ksp 与浓度关系。选项提示为：['text': 'Common ion effect', 'isCorrect': False, 'rationale': 'This effect actually decreases the solubility of a precipitate by shifting t。
+[Tingting] 练习3，题干要点：In a redox titration between n_1Ox_1 + n_2Red_2 \rightleftharpoons n_1Red_1 + n_2Ox_2, what is the general formula for the potential at the equivalence point (E。
+[Eddy (Chinese (China mainland))] 做题时优先写出平衡表达式，再代入 Ksp 与浓度关系。选项提示为：['text': 'E_sp = \\fracE_1 + E_22', 'isCorrect': False, 'rationale': 'This simplified version only applies when the number of electrons tran。
+[Tingting] 练习4，题干要点：During the standardization of Na_2S_2O_3 using K_2Cr_2O_7, why is the solution kept in the dark for several minutes after adding KI and acid?。
+[Eddy (Chinese (China mainland))] 做题时优先写出平衡表达式，再代入 Ksp 与浓度关系。选项提示为：['text': 'To prevent the volatility of I_2', 'isCorrect': False, 'rationale': 'Darkness does not significantly affect vapor pressure; using 。
+[Tingting] 最后总结三步法。第一步，写电离方程。第二步，列 Ksp 表达式。第三步，结合条件判断是否沉淀。
+[Eddy (Chinese (China mainland))] 如果你愿意，我下一期可以专门做配位滴定和误差分析的专题速听版。我们下期见。

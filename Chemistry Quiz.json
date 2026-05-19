@@ -1,0 +1,385 @@
+{
+  "title": "Chemistry Quiz",
+  "questions": [
+    {
+      "question": "For a sparingly soluble electrolyte of the type $MA_{2}$, such as $CaF_{2}$, how is the molar solubility ($s$) related to the solubility product constant ($K_{sp}^{0}$)?",
+      "answerOptions": [
+        {
+          "text": "$s = \\sqrt{K_{sp}^{0}}$",
+          "isCorrect": false,
+          "rationale": "This relationship is characteristic of $MA$ type electrolytes where the cation and anion are in a $1:1$ ratio."
+        },
+        {
+          "text": "$s = \\sqrt[3]{\\frac{K_{sp}^{0}}{4}}$",
+          "isCorrect": true,
+          "rationale": "For $MA_{2}$, the equilibrium is $[M^{2+}][A^{-}]^{2} = s(2s)^{2} = 4s^{3}$, making this the correct derivation for $s$."
+        },
+        {
+          "text": "$s = \\sqrt[3]{K_{sp}^{0}}$",
+          "isCorrect": false,
+          "rationale": "This ignores the stoichiometric coefficient of the anion in the solubility product expression."
+        },
+        {
+          "text": "$s = \\frac{K_{sp}^{0}}{4}$",
+          "isCorrect": false,
+          "rationale": "This fails to account for the cubic relationship between concentration and the solubility product for this stoichiometry."
+        }
+      ],
+      "hint": "Consider the stoichiometric coefficients when the solid dissociates into three ions."
+    },
+    {
+      "question": "Which phenomenon describes the increase in solubility of a precipitate when a strong electrolyte that does not share a common ion is added to the solution?",
+      "answerOptions": [
+        {
+          "text": "Common ion effect",
+          "isCorrect": false,
+          "rationale": "This effect actually decreases the solubility of a precipitate by shifting the equilibrium toward the solid phase."
+        },
+        {
+          "text": "Salt effect",
+          "isCorrect": true,
+          "rationale": "Adding non-common ions increases the ionic strength, which decreases activity coefficients and increases molar solubility."
+        },
+        {
+          "text": "Acid effect",
+          "isCorrect": false,
+          "rationale": "This refers specifically to the impact of $H^{+}$ ions on the solubility of salts containing anions of weak acids."
+        },
+        {
+          "text": "Complexation effect",
+          "isCorrect": false,
+          "rationale": "While it increases solubility, it specifically requires the formation of coordinate bonds between the ion and a ligand."
+        }
+      ],
+      "hint": "Think about how ionic strength influences the activity coefficients of the ions in equilibrium."
+    },
+    {
+      "question": "In a redox titration between $n_{1}Ox_{1} + n_{2}Red_{2} \\rightleftharpoons n_{1}Red_{1} + n_{2}Ox_{2}$, what is the general formula for the potential at the equivalence point ($E_{sp}$)?",
+      "answerOptions": [
+        {
+          "text": "$E_{sp} = \\frac{E_{1}^{0} + E_{2}^{0}}{2}$",
+          "isCorrect": false,
+          "rationale": "This simplified version only applies when the number of electrons transferred in both half-reactions is identical."
+        },
+        {
+          "text": "$E_{sp} = \\frac{n_{1}E_{1}^{0} + n_{2}E_{2}^{0}}{n_{1} + n_{2}}$",
+          "isCorrect": true,
+          "rationale": "This weighted average accounts for the stoichiometric electron transfer coefficients of both redox couples."
+        },
+        {
+          "text": "$E_{sp} = E_{1}^{0} - E_{2}^{0}$",
+          "isCorrect": false,
+          "rationale": "This represents the standard cell potential rather than the potential at a specific titration point."
+        },
+        {
+          "text": "$E_{sp} = \\frac{n_{2}E_{1}^{0} + n_{1}E_{2}^{0}}{n_{1} + n_{2}}$",
+          "isCorrect": false,
+          "rationale": "This incorrectly swaps the stoichiometric coefficients for the respective standard potentials."
+        }
+      ],
+      "hint": "The equivalence point potential is a weighted average of the standard potentials based on electron exchange."
+    },
+    {
+      "question": "During the standardization of $Na_{2}S_{2}O_{3}$ using $K_{2}Cr_{2}O_{7}$, why is the solution kept in the dark for several minutes after adding $KI$ and acid?",
+      "answerOptions": [
+        {
+          "text": "To prevent the volatility of $I_{2}$",
+          "isCorrect": false,
+          "rationale": "Darkness does not significantly affect vapor pressure; using a stoppered flask is the primary way to prevent volatility."
+        },
+        {
+          "text": "To prevent the photochemical oxidation of $I^{-}$ by $O_{2}$ in the air",
+          "isCorrect": true,
+          "rationale": "Light catalyzes the reaction between iodide and atmospheric oxygen, which would lead to an overestimation of the thiosulfate concentration."
+        },
+        {
+          "text": "To allow the $Cr^{3+}$ ions to form a green color",
+          "isCorrect": false,
+          "rationale": "The green color is a product of the reaction, but darkness is not required for its formation."
+        },
+        {
+          "text": "To ensure the thiosulfate does not decompose",
+          "isCorrect": false,
+          "rationale": "Thiosulfate is added after the iodine is generated; the dark period is specifically for the $KI$ and $K_{2}Cr_{2}O_{7}$ reaction step."
+        }
+      ],
+      "hint": "Consider the potential side reactions involving atmospheric oxygen and iodide ions."
+    },
+    {
+      "question": "Which hybridization and geometry are associated with the $[Ni(CN)_{4}]^{2-}$ complex ion, given its diamagnetic nature?",
+      "answerOptions": [
+        {
+          "text": "$sp^{3}$, Tetrahedral",
+          "isCorrect": false,
+          "rationale": "A tetrahedral arrangement for $d^{8}$ nickel would result in unpaired electrons and paramagnetism."
+        },
+        {
+          "text": "$dsp^{2}$, Square Planar",
+          "isCorrect": true,
+          "rationale": "The strong ligand field of $CN^{-}$ forces electron pairing in the $3d$ orbitals, leaving one $d$ orbital available for $dsp^{2}$ hybridization."
+        },
+        {
+          "text": "$sp^{3}d^{2}$, Octahedral",
+          "isCorrect": false,
+          "rationale": "This geometry requires six ligands, whereas this complex only has four cyanide groups."
+        },
+        {
+          "text": "$d^{2}sp^{3}$, Octahedral",
+          "isCorrect": false,
+          "rationale": "This inner-orbital hybrid is used for six-coordinate complexes, not four-coordinate ones."
+        }
+      ],
+      "hint": "The lack of unpaired electrons implies a specific rearrangement of the $d$ orbitals."
+    },
+    {
+      "question": "Calculate the theoretical magnetic moment ($\\mu$) for a $V^{3+}$ ion ($d^{2}$ configuration) using the spin-only formula.",
+      "answerOptions": [
+        {
+          "text": "$1.73$ B.M.",
+          "isCorrect": false,
+          "rationale": "This value corresponds to a $d^{1}$ configuration with only one unpaired electron."
+        },
+        {
+          "text": "$2.83$ B.M.",
+          "isCorrect": true,
+          "rationale": "Using $\\mu = \\sqrt{n(n+2)}$ with $n=2$ gives $\\sqrt{2(2+2)} = \\sqrt{8} \\approx 2.83$."
+        },
+        {
+          "text": "$3.87$ B.M.",
+          "isCorrect": false,
+          "rationale": "This results from a configuration with three unpaired electrons, such as $Cr^{3+}$."
+        },
+        {
+          "text": "$4.90$ B.M.",
+          "isCorrect": false,
+          "rationale": "This corresponds to four unpaired electrons, typical of high-spin $Fe^{2+}$."
+        }
+      ],
+      "hint": "Apply the formula $\\mu = \\sqrt{n(n+2)}$ where $n$ is the number of unpaired electrons."
+    },
+    {
+      "question": "In complexometric titrations with EDTA, what does the conditional stability constant ($K'_{MY}$) account for that the standard stability constant ($K_{MY}^{0}$) does not?",
+      "answerOptions": [
+        {
+          "text": "The temperature of the solution",
+          "isCorrect": false,
+          "rationale": "Both constants are temperature-dependent, but this is not the distinguishing feature of the conditional constant."
+        },
+        {
+          "text": "The effect of pH and auxiliary complexing agents on the effective concentration of species",
+          "isCorrect": true,
+          "rationale": "The conditional constant adjusts for side reactions, such as EDTA protonation or metal ion hydrolysis, that reduce the main reaction's extent."
+        },
+        {
+          "text": "The ionic strength of the medium only",
+          "isCorrect": false,
+          "rationale": "Ionic strength is handled by activity coefficients; $K'$ specifically targets the chemical side-equilibria."
+        },
+        {
+          "text": "The rate of coordinate bond formation",
+          "isCorrect": false,
+          "rationale": "Stability constants describe equilibrium states, not the kinetics or speed of the reaction."
+        }
+      ],
+      "hint": "Think about why the 'effective' stability of a complex changes when the acidity of the solution changes."
+    },
+    {
+      "question": "Which reagent is commonly used as a masking agent to prevent $Al^{3+}$ from interfering during an EDTA titration of $Zn^{2+}$ or $Mg^{2+}$?",
+      "answerOptions": [
+        {
+          "text": "$NH_{4}F$",
+          "isCorrect": true,
+          "rationale": "Fluoride ions form a very stable $[AlF_{6}]^{3-}$ complex, effectively lowering the free $Al^{3+}$ concentration so it doesn't react with EDTA."
+        },
+        {
+          "text": "KCN",
+          "isCorrect": false,
+          "rationale": "Cyanide is used to mask transition metals like $Cu^{2+}$ or $Ni^{2+}$, but it does not effectively mask aluminum."
+        },
+        {
+          "text": "Triethanolamine (TEA)",
+          "isCorrect": false,
+          "rationale": "While TEA can mask $Al^{3+}$, it is usually applied in strongly alkaline conditions for different metal groups."
+        },
+        {
+          "text": "$SnCl_{2}$",
+          "isCorrect": false,
+          "rationale": "This is a reducing agent used in redox pre-treatments, not a coordination masking agent."
+        }
+      ],
+      "hint": "Look for a ligand that forms an exceptionally stable complex specifically with aluminum ions."
+    },
+    {
+      "question": "What happens to the solubility of $AgCl$ if a large excess of $NaCl$ is added to the solution?",
+      "answerOptions": [
+        {
+          "text": "It continues to decrease indefinitely due to the common ion effect",
+          "isCorrect": false,
+          "rationale": "The common ion effect dominates only at low to moderate concentrations of the excess ion."
+        },
+        {
+          "text": "It decreases initially but then increases due to the formation of soluble complex ions like $[AgCl_{2}]^{-}$",
+          "isCorrect": true,
+          "rationale": "At high chloride concentrations, complexation overcomes the common ion effect, pulling silver back into the aqueous phase."
+        },
+        {
+          "text": "It remains constant once the $K_{sp}$ is reached",
+          "isCorrect": false,
+          "rationale": "Solubility is a dynamic equilibrium that responds to changes in the concentration of coordinating species."
+        },
+        {
+          "text": "It increases immediately due to the salt effect",
+          "isCorrect": false,
+          "rationale": "The salt effect is much weaker than the common ion effect and would not be the primary driver in the presence of a common ion."
+        }
+      ],
+      "hint": "Consider the possibility of coordinate bond formation when ligand concentration is very high."
+    },
+    {
+      "question": "In the context of transition metal properties, why do ions like $Sc^{3+}$ and $Zn^{2+}$ typically form colorless aqueous solutions?",
+      "answerOptions": [
+        {
+          "text": "They have $d$ orbitals that are too high in energy",
+          "isCorrect": false,
+          "rationale": "The energy level of the orbitals is not the issue; it is the electron occupancy that determines color."
+        },
+        {
+          "text": "They lack the $d-d$ transitions because their $d$ subshells are either empty ($d^{0}$) or completely full ($d^{10}$)",
+          "isCorrect": true,
+          "rationale": "Color in transition metals usually arises from electron transitions between split $d$ orbitals, which is impossible if no electrons or no vacancies exist."
+        },
+        {
+          "text": "They are in the $ds$-block rather than the $d$-block",
+          "isCorrect": false,
+          "rationale": "While $Zn$ is in the $ds$-block, $Sc$ is in the $d$-block; the block designation doesn't fundamentally prevent color."
+        },
+        {
+          "text": "Water is a strong ligand that suppresses color",
+          "isCorrect": false,
+          "rationale": "Water is actually a relatively weak ligand, and many colorful ions exist as aqua complexes."
+        }
+      ],
+      "hint": "Think about the requirements for electronic transitions within the $d$ subshell."
+    },
+    {
+      "question": "Why is $KMnO_{4}$ titration usually performed in a strongly acidic solution ($H_{2}SO_{4}$)?",
+      "answerOptions": [
+        {
+          "text": "To prevent the decomposition of the oxalate standard",
+          "isCorrect": false,
+          "rationale": "Oxalate is stable in acid; the acid choice is driven by the desired reduction path of the titrant."
+        },
+        {
+          "text": "To ensure that $MnO_{4}^{-}$ is reduced to $Mn^{2+}$, which is nearly colorless",
+          "isCorrect": true,
+          "rationale": "In acidic media, the 5-electron reduction to $Mn^{2+}$ occurs, providing a clear endpoint; in neutral media, brown $MnO_{2}$ forms, obscuring the endpoint."
+        },
+        {
+          "text": "To catalyze the reaction at room temperature",
+          "isCorrect": false,
+          "rationale": "Acid is a reactant, not a catalyst, and heat is often still required to speed up the reaction with oxalate."
+        },
+        {
+          "text": "To increase the oxidizing power of the $Fe^{2+}$ analyte",
+          "isCorrect": false,
+          "rationale": "The acid affects the potential of the permanganate/manganese couple, not the analyte's fundamental properties."
+        }
+      ],
+      "hint": "Consider the different reduction products of the permanganate ion in various pH environments."
+    },
+    {
+      "question": "True or False: In a complexometric titration, a 'blocked' indicator occurs when the metal-indicator complex is more stable than the metal-EDTA complex.",
+      "answerOptions": [
+        {
+          "text": "True",
+          "isCorrect": true,
+          "rationale": "If the indicator binds the metal more tightly than EDTA does, the EDTA cannot displace the indicator to cause a color change at the equivalence point."
+        },
+        {
+          "text": "False",
+          "isCorrect": false,
+          "rationale": "This describes the exact mechanism of indicator blocking, where the color remains that of the $M-In$ complex."
+        }
+      ],
+      "hint": "Reflect on the relative stability constants required for an indicator to successfully signal the end of a titration."
+    },
+    {
+      "question": "Which of the following describes the 'acid effect' on the solubility of $CaC_{2}O_{4}$?",
+      "answerOptions": [
+        {
+          "text": "Protons react with $Ca^{2+}$ to form soluble complexes",
+          "isCorrect": false,
+          "rationale": "Protons do not form coordinate complexes with alkaline earth metal cations."
+        },
+        {
+          "text": "Protons react with $C_{2}O_{4}^{2-}$ to form $HC_{2}O_{4}^{-}$ and $H_{2}C_{2}O_{4}$, shifting the equilibrium to dissolve more solid",
+          "isCorrect": true,
+          "rationale": "Lowering the concentration of the free anion by protonation forces more of the precipitate to dissolve according to Le Chatelier's principle."
+        },
+        {
+          "text": "The increase in ionic strength causes the $K_{sp}$ value itself to change",
+          "isCorrect": false,
+          "rationale": "The thermodynamic $K_{sp}$ is a constant at a given temperature; the apparent solubility changes, not the constant."
+        },
+        {
+          "text": "Acidic conditions favor the formation of a different, less soluble hydrate",
+          "isCorrect": false,
+          "rationale": "The identity of the precipitate usually remains the same; it simply dissolves more readily due to anion consumption."
+        }
+      ],
+      "hint": "Consider how the anion of a weak acid behaves when the concentration of $H^{+}$ increases."
+    },
+    {
+      "question": "What is the primary reason that $HgCl_{2}$ has a relatively low melting point and can be purified by sublimation?",
+      "answerOptions": [
+        {
+          "text": "It forms a giant ionic lattice",
+          "isCorrect": false,
+          "rationale": "Giant ionic lattices result in very high melting points and do not typically allow for sublimation."
+        },
+        {
+          "text": "It exists as discrete linear $Cl-Hg-Cl$ molecules held by weak intermolecular forces",
+          "isCorrect": true,
+          "rationale": "The covalent nature of the $Hg-Cl$ bond creates molecular units rather than a traditional ionic crystal, facilitating phase changes."
+        },
+        {
+          "text": "Mercury is a liquid at room temperature",
+          "isCorrect": false,
+          "rationale": "The state of the elemental metal does not dictate the crystal structure or bonding of its salts."
+        },
+        {
+          "text": "It reacts with air to form a volatile oxide",
+          "isCorrect": false,
+          "rationale": "Sublimation is a physical change of the chloride itself, not a chemical reaction with oxygen."
+        }
+      ],
+      "hint": "Think about the type of bonding (ionic vs. covalent) and the resulting crystal structure."
+    },
+    {
+      "question": "For the determination of $Fe^{3+}$ using EDTA, why must the pH be carefully controlled near $1.3$ to $1.8$?",
+      "answerOptions": [
+        {
+          "text": "To prevent the reduction of $Fe^{3+}$ to $Fe^{2+}$",
+          "isCorrect": false,
+          "rationale": "pH control is primarily about managing competition between hydroxide and EDTA, not redox stability."
+        },
+        {
+          "text": "To ensure the indicator works and to prevent the precipitation of $Fe(OH)_{3}$",
+          "isCorrect": true,
+          "rationale": "At higher pH, iron will precipitate as a hydroxide before it can be titrated; at lower pH, the EDTA complex is not stable enough."
+        },
+        {
+          "text": "To catalyze the slow coordination reaction",
+          "isCorrect": false,
+          "rationale": "Acidification often slows coordination reactions; buffer systems are used to maintain the optimal thermodynamic window."
+        },
+        {
+          "text": "To mask other interfering ions like $Ca^{2+}$ and $Mg^{2+}$",
+          "isCorrect": false,
+          "rationale": "While low pH does prevent $Ca/Mg$ from reacting, the upper limit of the range is strictly set by iron's tendency to hydrolyze."
+        }
+      ],
+      "hint": "High acidity prevents metal hydrolysis, but too much acidity destabilizes the EDTA complex."
+    }
+  ]
+}
