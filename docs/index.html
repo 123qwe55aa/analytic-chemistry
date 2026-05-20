@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytical Chemistry Cram Workspace</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section id="errorView" class="app-shell" hidden>
+      <article class="panel">
+        <h2>Data Load Problem</h2>
+        <p id="errorMessage" class="helper"></p>
+        <button class="btn btn-primary" data-action="retry-load">Retry</button>
+      </article>
+    </section>
+
+    <div id="appRoot" class="app-shell app-root" data-app-root="true">
+      <header class="topbar" role="banner">
+        <div class="brand">
+          <p class="brand-kicker">Final Exam Sprint Console</p>
+          <h1>Analytical Chemistry Cram Workspace</h1>
+        </div>
+        <div class="session-meta" aria-label="Session overview">
+          <p><span>Flashcards</span><strong id="dashboardFlashcardTotal">0</strong></p>
+          <p><span>Quiz Qs</span><strong id="dashboardQuizTotal">0</strong></p>
+          <p><span>Weak Items</span><strong id="dashboardWeakTotal">0</strong></p>
+          <p><span>Missed Qs</span><strong id="dashboardMissedTotal">0</strong></p>
+        </div>
+      </header>
+
+      <nav class="view-tabs" aria-label="Workspace views">
+        <button class="tab active" data-route="dashboard" aria-current="page">Dashboard</button>
+        <button class="tab" data-route="cram">Cram</button>
+        <button class="tab" data-route="flashcards">Flashcards</button>
+        <button class="tab" data-route="quiz">Quiz</button>
+        <button class="tab" data-route="mistakes">Mistakes</button>
+        <button class="tab" data-route="references">References</button>
+      </nav>
+
+      <main class="workspace" role="main">
+        <section id="view-dashboard" class="view" data-view="dashboard">
+          <div class="split-grid">
+            <article class="panel panel-accent">
+              <h2 id="dashboard-heading">Today's Exam Push</h2>
+              <p class="helper">Start a mixed sprint or jump straight into weak zones.</p>
+              <ul class="stat-list">
+                <li><span data-bind="flashcard-title">Flashcards</span><strong data-bind="flashcard-total">0</strong></li>
+                <li><span data-bind="quiz-title">Quiz Questions</span><strong data-bind="quiz-total">0</strong></li>
+                <li><span>Weak Flashcards</span><strong data-bind="weak-total">0</strong></li>
+                <li><span>Missed Quiz Questions</span><strong data-bind="missed-total">0</strong></li>
+              </ul>
+              <div class="actions">
+                <button class="btn btn-primary" data-action="start-cram">Start Cram Session</button>
+                <button class="btn btn-ghost" data-route="mistakes">Review Mistakes</button>
+                <button class="btn btn-ghost" data-route="flashcards">Drill Flashcards</button>
+                <button class="btn btn-ghost" data-route="quiz">Practice Quiz</button>
+              </div>
+            </article>
+
+            <article class="panel">
+              <h3>How It Works</h3>
+              <ol class="activity-list">
+                <li><p>Cram mixes 5 flashcards + 5 quiz questions by default.</p></li>
+                <li><p>Mark flashcards as known, unsure, or missed.</p></li>
+                <li><p>Wrong quiz answers auto-enter the mistakes queue.</p></li>
+                <li><p>Use References for formula map, audio, and lecture PDFs.</p></li>
+              </ol>
+              <div class="goal-block">
+                <h3>Daily Goal</h3>
+                <p class="helper">
+                  Exam countdown:
+                  <strong id="examCountdown">--</strong>
+                </p>
+                <p class="helper">
+                  Progress:
+                  <strong id="dailyGoalProgress">0 / 30</strong>
+                </p>
+                <div class="actions">
+                  <button class="btn btn-primary" data-action="goal-add">+1 Done</button>
+                  <button class="btn btn-ghost" data-action="goal-reset">Reset Today</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-cram" class="view" data-view="cram" hidden>
+          <article class="panel">
+            <h2>Cram Session</h2>
+            <p class="helper">Mixed sequence for rapid exam recall.</p>
+            <div class="quiz-row">
+              <div class="result-chip">Progress: <strong id="cramProgress">0 / 0</strong></div>
+              <div class="result-chip">Type: <strong id="cramType">Ready</strong></div>
+              <div class="result-chip">Quiz Score: <strong id="cramScore">0</strong></div>
+            </div>
+            <div class="card-stage">
+              <h3 id="cramPrompt">Start a cram session from Dashboard.</h3>
+              <div id="cramOptions" class="stack"></div>
+              <div class="actions">
+                <button id="cramSubmit" class="btn btn-primary" data-action="cram-submit">Submit Quiz Answer</button>
+                <button class="btn btn-ghost" data-action="start-cram">Restart Session</button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section id="view-flashcards" class="view" data-view="flashcards" hidden>
+          <article class="panel">
+            <h2>Flashcards</h2>
+            <p class="helper">
+              <span data-bind="flashcard-title" id="flashcardsTitle">Flashcards</span>
+              <span class="card-tag" id="flashcardPosition">0 / 0</span>
+            </p>
+
+            <div class="card-stage">
+              <div id="flashcardFrontFace" data-face="front">
+                <h3 id="flashcardFront" data-bind="flashcard-front">Loading front...</h3>
+              </div>
+              <div id="flashcardBackFace" data-face="back" hidden>
+                <h3 id="flashcardBack" data-bind="flashcard-back">Loading back...</h3>
+              </div>
+              <p id="flashcardStatus" data-bind="flashcard-status">Status: unseen</p>
+            </div>
+
+            <div class="actions">
+              <button id="flashcardFlip" class="btn btn-primary" data-action="flashcard-flip">Flip</button>
+              <button id="flashcardPrev" class="btn btn-ghost" data-action="flashcard-prev">Prev</button>
+              <button id="flashcardNext" class="btn btn-ghost" data-action="flashcard-next">Next</button>
+              <button class="btn btn-ghost" data-action="flashcard-shuffle">Shuffle</button>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" data-action="flashcard-known">Known</button>
+              <button class="btn btn-ghost" data-action="flashcard-unsure">Unsure</button>
+              <button class="btn btn-ghost" data-action="flashcard-missed">Missed</button>
+            </div>
+          </article>
+        </section>
+
+        <section id="view-quiz" class="view" data-view="quiz" hidden>
+          <article class="panel">
+            <h2>Quiz Practice</h2>
+            <p class="helper">
+              <span data-bind="quiz-title" id="quizTitle">Quiz</span>
+              <span class="card-tag" id="quizPosition">0 / 0</span>
+            </p>
+            <h3 id="quizQuestion" data-bind="quiz-question">Loading question...</h3>
+
+            <div id="quizOptions" data-bind="quiz-options" class="stack"></div>
+            <p id="quizHint" data-bind="quiz-hint" class="helper" hidden></p>
+            <p id="quizFeedback" data-bind="quiz-feedback" class="helper" hidden></p>
+
+            <div class="quiz-row">
+              <div class="result-chip">Score: <strong id="quizScore">0</strong></div>
+            </div>
+
+            <div class="actions">
+              <button id="quizSubmit" class="btn btn-primary" data-action="quiz-submit">Submit</button>
+              <button class="btn btn-ghost" data-action="quiz-toggle-hint">Hint</button>
+              <button id="quizPrev" class="btn btn-ghost" data-action="quiz-prev">Prev</button>
+              <button id="quizNext" class="btn btn-ghost" data-action="quiz-next">Next</button>
+            </div>
+          </article>
+        </section>
+
+        <section id="view-mistakes" class="view" data-view="mistakes" hidden>
+          <article class="panel">
+            <h2>Mistakes Loop</h2>
+            <p class="helper">Clean up weak cards and missed questions before the exam.</p>
+
+            <h3>Weak Flashcards</h3>
+            <ul id="mistakesWeakList" data-bind="mistakes-weak" class="mistake-list"></ul>
+            <button id="clearWeakCards" class="btn btn-ghost" data-action="clear-weak-cards">Clear Weak Flashcards</button>
+
+            <h3>Missed Quiz Questions</h3>
+            <ul id="mistakesQuizList" data-bind="mistakes-quiz" class="mistake-list"></ul>
+            <button id="clearMissedQuestions" class="btn btn-ghost" data-action="clear-missed-questions">Clear Missed Questions</button>
+
+            <h3>Topic Hotspots</h3>
+            <ul id="mistakesTopicList" data-bind="mistakes-topics" class="mistake-list"></ul>
+          </article>
+        </section>
+
+        <section id="view-references" class="view" data-view="references" hidden>
+          <article class="panel">
+            <h2>References</h2>
+            <p class="helper">Deep review materials in one place.</p>
+
+            <div class="ref-grid">
+              <a class="ref-item" href="assets/Mastering%20Analytical%20Equilibria%20Principles.png" target="_blank" rel="noopener">Concept Map Image</a>
+              <a class="ref-item" href="assets/podcast_analytic_chemistry.mp3" target="_blank" rel="noopener">Audio Review Podcast</a>
+              <a class="ref-item" href="../Analytical%20Equilibrium%20Blueprint.pdf" target="_blank" rel="noopener">Blueprint PDF</a>
+              <a class="ref-item" href="../课件_20260407_130520.pdf" target="_blank" rel="noopener">Lecture PDF 1</a>
+              <a class="ref-item" href="../课件_20260407_132414.pdf" target="_blank" rel="noopener">Lecture PDF 2</a>
+              <a class="ref-item" href="../课件_20260407_132722.pdf" target="_blank" rel="noopener">Lecture PDF 3</a>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
