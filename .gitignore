@@ -6,7 +6,6 @@ podcast_segments/
 .worktrees/
 
 # large assets excluded from git
-*.pdf
 *.mp4
 *.m4a
 *.png
