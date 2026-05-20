@@ -47,6 +47,21 @@
     return document.getElementById(id);
   }
 
+  var mathRenderTimer = null;
+
+  function queueMathTypeset() {
+    if (!window.MathJax || typeof window.MathJax.typesetPromise !== 'function') {
+      return;
+    }
+    if (mathRenderTimer) {
+      clearTimeout(mathRenderTimer);
+    }
+    mathRenderTimer = setTimeout(function () {
+      window.MathJax.typesetPromise().catch(function () {});
+      mathRenderTimer = null;
+    }, 20);
+  }
+
   function queryAll(selector) {
     return Array.prototype.slice.call(document.querySelectorAll(selector));
   }
@@ -193,6 +208,7 @@
     setText('[data-bind="quiz-title"], #quizTitle', state.quizTitle || 'Quiz');
     setText('#examCountdown', getExamCountdownText());
     setText('#dailyGoalProgress', state.dailyGoal.completed + ' / ' + state.dailyGoal.target);
+    queueMathTypeset();
   }
 
   function renderError() {
@@ -247,6 +263,7 @@
       setDisabled('#flashcardPrev, [data-action="flashcard-prev"]', true);
       setDisabled('#flashcardNext, [data-action="flashcard-next"]', true);
       setDisabled('#flashcardFlip, [data-action="flashcard-flip"]', true);
+      queueMathTypeset();
       return;
     }
 
@@ -262,6 +279,7 @@
     setDisabled('#flashcardPrev, [data-action="flashcard-prev"]', state.flashcardIndex <= 0);
     setDisabled('#flashcardNext, [data-action="flashcard-next"]', state.flashcardIndex >= state.flashcardOrder.length - 1);
     setDisabled('#flashcardFlip, [data-action="flashcard-flip"]', false);
+    queueMathTypeset();
   }
 
   function setFlashcardStatus(status) {
@@ -308,6 +326,7 @@
       setText('[data-bind="quiz-question"], #quizQuestion', 'No quiz questions available.');
       setHtml('[data-bind="quiz-options"], #quizOptions', '');
       setDisabled('#quizSubmit, [data-action="quiz-submit"]', true);
+      queueMathTypeset();
       return;
     }
 
@@ -344,6 +363,7 @@
     setDisabled('#quizPrev, [data-action="quiz-prev"]', state.quizIndex <= 0);
     setDisabled('#quizNext, [data-action="quiz-next"]', state.quizIndex >= state.quizOrder.length - 1);
     setText('[data-bind="quiz-score"], #quizScore', String(state.quizScore));
+    queueMathTypeset();
   }
 
   function setQuizQuestionState(partialReset) {
@@ -433,6 +453,7 @@
       setText('[data-bind="cram-score"], #cramScore', String(state.cramQuizScore));
       setHtml('[data-bind="cram-options"], #cramOptions', '');
       setHidden('#cramSubmit, [data-action="cram-submit"]', true);
+      queueMathTypeset();
       return;
     }
 
@@ -456,6 +477,7 @@
     }
 
     setText('[data-bind="cram-score"], #cramScore', String(state.cramQuizScore));
+    queueMathTypeset();
   }
 
   function advanceCram() {
@@ -577,6 +599,7 @@
 
     setDisabled('#clearWeakCards, [data-action="clear-weak-cards"]', weakCards.length === 0);
     setDisabled('#clearMissedQuestions, [data-action="clear-missed-questions"]', missedQuestions.length === 0);
+    queueMathTypeset();
   }
 
   function clearWeakCards() {
@@ -726,6 +749,7 @@
       renderMistakes();
       renderCram();
       switchView(state.activeView || 'dashboard');
+      queueMathTypeset();
     } catch (error) {
       state.loading = false;
       state.loadError = 'Failed to load study data. Check your files and try again.';
