@@ -291,6 +291,73 @@
     '</div>';
   }
 
+  function renderChapterFlashcardPanel(summary) {
+    var preview = summary.flashcardIndexes.slice(0, 4).map(function (index) {
+      var card = state.flashcards[index];
+      var status = state.flashcardStatus[flashcardKey(card, index)] || 'unseen';
+      return '<li><strong>' + card.front + '</strong><span>' + status + '</span></li>';
+    }).join('');
+
+    return '<article class="panel">' +
+      '<h3>Chapter Flashcards</h3>' +
+      '<p class="helper">Drill only the cards classified under ' + summary.name + '.</p>' +
+      '<ul class="mistake-list">' + (preview || '<li>No flashcards in this chapter.</li>') + '</ul>' +
+      '<div class="actions">' +
+        '<button class="btn btn-primary" data-action="chapter-drill-flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Drill Chapter Deck</button>' +
+        '<button class="btn btn-ghost" data-chapter-mode="mistakes">Review Weak Cards</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderChapterQuizPanel(summary) {
+    var preview = summary.questionIndexes.slice(0, 4).map(function (index) {
+      var question = state.questions[index];
+      var missed = state.missedQuestions[questionKey(question, index)] ? 'missed' : 'ready';
+      return '<li><strong>' + question.question + '</strong><span>' + missed + '</span></li>';
+    }).join('');
+
+    return '<article class="panel">' +
+      '<h3>Chapter Quiz</h3>' +
+      '<p class="helper">Practice only the quiz questions classified under this chapter.</p>' +
+      '<ul class="mistake-list">' + (preview || '<li>No quiz questions in this chapter.</li>') + '</ul>' +
+      '<div class="actions">' +
+        '<button class="btn btn-primary" data-action="chapter-practice-quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Practice Chapter Quiz</button>' +
+        '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Mix Into Cram</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderChapterMistakesPanel(summary) {
+    var weakCards = summary.flashcardIndexes.map(function (index) {
+      var card = state.flashcards[index];
+      var status = state.flashcardStatus[flashcardKey(card, index)];
+      if (status !== 'unsure' && status !== 'missed') {
+        return '';
+      }
+      return '<li><strong>' + card.front + '</strong><span>' + status + '</span></li>';
+    }).filter(Boolean).join('');
+
+    var missedQuestions = summary.questionIndexes.map(function (index) {
+      var question = state.questions[index];
+      var entry = state.missedQuestions[questionKey(question, index)];
+      if (!entry) {
+        return '';
+      }
+      return '<li><strong>' + question.question + '</strong><span>missed</span></li>';
+    }).filter(Boolean).join('');
+
+    return '<div class="split-grid">' +
+      '<article class="panel">' +
+        '<h3>Weak Flashcards</h3>' +
+        '<ul class="mistake-list">' + (weakCards || '<li>No weak cards in this chapter.</li>') + '</ul>' +
+      '</article>' +
+      '<article class="panel">' +
+        '<h3>Missed Quiz Questions</h3>' +
+        '<ul class="mistake-list">' + (missedQuestions || '<li>No missed questions in this chapter.</li>') + '</ul>' +
+      '</article>' +
+    '</div>';
+  }
+
   function renderChapterWorkspace() {
     var summary = getSelectedChapterSummary();
     if (!summary) {
@@ -317,6 +384,22 @@
 
     if (state.chapterMode === 'overview') {
       setHtml('#chapterPanel', renderChapterOverview(summary));
+    } else if (state.chapterMode === 'flashcards') {
+      setHtml('#chapterPanel', renderChapterFlashcardPanel(summary));
+    } else if (state.chapterMode === 'quiz') {
+      setHtml('#chapterPanel', renderChapterQuizPanel(summary));
+    } else if (state.chapterMode === 'mistakes') {
+      setHtml('#chapterPanel', renderChapterMistakesPanel(summary));
+    } else if (state.chapterMode === 'cram') {
+      setHtml('#chapterPanel',
+        '<article class="panel">' +
+          '<h3>Chapter Cram</h3>' +
+          '<p class="helper">Mix up to ' + CRAM_FLASHCARD_COUNT + ' flashcards and ' + CRAM_QUIZ_COUNT + ' quiz questions from this chapter.</p>' +
+          '<div class="actions">' +
+            '<button class="btn btn-primary" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Start Chapter Cram</button>' +
+          '</div>' +
+        '</article>'
+      );
     } else {
       setHtml('#chapterPanel', '<article class="panel"><h3>' + summary.name + ' ' + state.chapterMode + '</h3><p class="helper">This chapter tool is ready for filtered practice wiring.</p></article>');
     }
@@ -571,6 +654,41 @@
     switchView('cram');
   }
 
+  function startChapterCram(summary) {
+    if (!summary) {
+      return;
+    }
+    var cardIndices = shuffle(summary.flashcardIndexes).slice(0, CRAM_FLASHCARD_COUNT);
+    var questionIndices = shuffle(summary.questionIndexes).slice(0, CRAM_QUIZ_COUNT);
+
+    state.cramFlashcardOrder = cardIndices;
+    state.cramQuizOrder = questionIndices;
+    state.cramQueue = cardIndices.map(function (idx) {
+      return { type: 'flashcard', index: idx };
+    }).concat(questionIndices.map(function (idx) {
+      return { type: 'quiz', index: idx };
+    }));
+
+    if (!state.cramQueue.length) {
+      renderChapterWorkspace();
+      return;
+    }
+
+    state.cramQueue = shuffle(state.cramQueue);
+    state.cramIndex = 0;
+    state.cramQuizScore = 0;
+    state.cramStartedAt = Date.now();
+
+    persist(STORAGE_KEYS.lastSession, {
+      startedAt: state.cramStartedAt,
+      chapter: summary.id,
+      flashcards: cardIndices,
+      questions: questionIndices
+    });
+
+    switchView('cram');
+  }
+
   function renderCram() {
     var current = state.cramQueue[state.cramIndex];
     setText('[data-bind="cram-progress"], #cramProgress', state.cramQueue.length ? (state.cramIndex + 1) + ' / ' + state.cramQueue.length : '0 / 0');
@@ -773,6 +891,13 @@
         return;
       }
 
+      var chapterCram = target.getAttribute('data-chapter-cram');
+      if (chapterCram) {
+        state.selectedChapterId = chapterCram;
+        startChapterCram(getSelectedChapterSummary());
+        return;
+      }
+
       var route = target.getAttribute('data-route');
       if (route) {
         switchView(route);
@@ -788,6 +913,18 @@
         loadData();
       } else if (action === 'start-cram') {
         startCramSession();
+      } else if (action === 'chapter-drill-flashcards') {
+        var flashcardSummary = getSelectedChapterSummary();
+        state.flashcardOrder = flashcardSummary ? flashcardSummary.flashcardIndexes.slice() : [];
+        state.flashcardIndex = 0;
+        state.flashcardFlipped = false;
+        switchView('flashcards');
+      } else if (action === 'chapter-practice-quiz') {
+        var quizSummary = getSelectedChapterSummary();
+        state.quizOrder = quizSummary ? quizSummary.questionIndexes.slice() : [];
+        state.quizIndex = 0;
+        setQuizQuestionState(false);
+        switchView('quiz');
       } else if (action === 'flashcard-flip') {
         state.flashcardFlipped = !state.flashcardFlipped;
         renderFlashcards();
