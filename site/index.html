@@ -41,6 +41,7 @@
 
       <nav class="view-tabs" aria-label="Workspace views">
         <button class="tab active" data-route="dashboard" aria-current="page">Dashboard</button>
+        <button class="tab" data-route="chapter">Chapter</button>
         <button class="tab" data-route="cram">Cram</button>
         <button class="tab" data-route="flashcards">Flashcards</button>
         <button class="tab" data-route="quiz">Quiz</button>
@@ -50,49 +51,21 @@
 
       <main class="workspace" role="main">
         <section id="view-dashboard" class="view" data-view="dashboard">
-          <div class="split-grid">
-            <article class="panel panel-accent">
-              <h2 id="dashboard-heading">Today's Exam Push</h2>
-              <p class="helper">Start a mixed sprint or jump straight into weak zones.</p>
-              <ul class="stat-list">
-                <li><span data-bind="flashcard-title">Flashcards</span><strong data-bind="flashcard-total">0</strong></li>
-                <li><span data-bind="quiz-title">Quiz Questions</span><strong data-bind="quiz-total">0</strong></li>
-                <li><span>Weak Flashcards</span><strong data-bind="weak-total">0</strong></li>
-                <li><span>Missed Quiz Questions</span><strong data-bind="missed-total">0</strong></li>
-              </ul>
-              <div class="actions">
-                <button class="btn btn-primary" data-action="start-cram">Start Cram Session</button>
-                <button class="btn btn-ghost" data-route="mistakes">Review Mistakes</button>
-                <button class="btn btn-ghost" data-route="flashcards">Drill Flashcards</button>
-                <button class="btn btn-ghost" data-route="quiz">Practice Quiz</button>
-              </div>
-            </article>
+          <section class="playground-hero" aria-labelledby="dashboard-heading">
+            <div>
+              <p class="brand-kicker">Chapter Playground</p>
+              <h2 id="dashboard-heading">Choose a chapter. Drill the weak spots.</h2>
+              <p class="helper">Jump into focused flashcards, quiz practice, cram mode, or mistake review by chemistry chapter.</p>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" data-action="start-cram">Global Cram</button>
+              <button class="btn btn-ghost" data-route="mistakes">All Mistakes</button>
+              <button class="btn btn-ghost" data-action="goal-add">+1 Done</button>
+              <button class="btn btn-ghost" data-action="goal-reset">Reset Today</button>
+            </div>
+          </section>
 
-            <article class="panel">
-              <h3>How It Works</h3>
-              <ol class="activity-list">
-                <li><p>Cram mixes 5 flashcards + 5 quiz questions by default.</p></li>
-                <li><p>Mark flashcards as known, unsure, or missed.</p></li>
-                <li><p>Wrong quiz answers auto-enter the mistakes queue.</p></li>
-                <li><p>Use References for formula map, audio, and lecture PDFs.</p></li>
-              </ol>
-              <div class="goal-block">
-                <h3>Daily Goal</h3>
-                <p class="helper">
-                  Exam countdown:
-                  <strong id="examCountdown">--</strong>
-                </p>
-                <p class="helper">
-                  Progress:
-                  <strong id="dailyGoalProgress">0 / 30</strong>
-                </p>
-                <div class="actions">
-                  <button class="btn btn-primary" data-action="goal-add">+1 Done</button>
-                  <button class="btn btn-ghost" data-action="goal-reset">Reset Today</button>
-                </div>
-              </div>
-            </article>
-          </div>
+          <section class="chapter-grid" id="chapterGrid" aria-label="Chemistry chapters"></section>
         </section>
 
         <section id="view-cram" class="view" data-view="cram" hidden>
@@ -192,6 +165,27 @@
           </article>
         </section>
 
+        <section id="view-chapter" class="view" data-view="chapter" hidden>
+          <article class="chapter-workspace">
+            <div class="chapter-head">
+              <div>
+                <p class="brand-kicker">Focused Chapter</p>
+                <h2 id="chapterTitle">Chapter</h2>
+                <p class="helper" id="chapterCue"></p>
+              </div>
+              <div class="chapter-metrics" id="chapterMetrics"></div>
+            </div>
+            <div class="mode-tabs" aria-label="Chapter tools">
+              <button class="mode-tab is-active" data-chapter-mode="overview">Overview</button>
+              <button class="mode-tab" data-chapter-mode="flashcards">Flashcards</button>
+              <button class="mode-tab" data-chapter-mode="quiz">Quiz</button>
+              <button class="mode-tab" data-chapter-mode="cram">Cram</button>
+              <button class="mode-tab" data-chapter-mode="mistakes">Mistakes</button>
+            </div>
+            <div id="chapterPanel" class="chapter-panel"></div>
+          </article>
+        </section>
+
         <section id="view-references" class="view" data-view="references" hidden>
           <article class="panel">
             <h2>References</h2>
@@ -210,6 +204,7 @@
       </main>
     </div>
 
+    <script src="./chapter-model.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
