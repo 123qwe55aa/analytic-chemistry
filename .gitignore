@@ -3,6 +3,7 @@
 
 # generated temp files
 podcast_segments/
+.worktrees/
 
 # large assets excluded from git
 *.pdf
