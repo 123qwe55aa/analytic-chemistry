@@ -36,6 +36,8 @@
     cramQuizOrder: [],
     cramQuizScore: 0,
     cramStartedAt: null,
+    selectedChapterId: 'solubility',
+    chapterMode: 'overview',
     dailyGoal: {
       date: '',
       completed: 0,
@@ -198,6 +200,212 @@
     return count;
   }
 
+  function chapterModel() {
+    return window.ChapterModel;
+  }
+
+  function getChapterSummaries() {
+    if (!chapterModel()) {
+      return [];
+    }
+    return chapterModel().buildChapterSummaries(
+      state.flashcards,
+      state.questions,
+      state.flashcardStatus,
+      state.missedQuestions
+    );
+  }
+
+  function getSelectedChapterSummary() {
+    var summaries = getChapterSummaries();
+    return summaries.find(function (summary) {
+      return summary.id === state.selectedChapterId;
+    }) || summaries[0] || null;
+  }
+
+  function metricChip(label, value) {
+    return '<span class="result-chip"><span>' + label + '</span> <strong>' + value + '</strong></span>';
+  }
+
+  function renderChapterGrid() {
+    var summaries = getChapterSummaries();
+    var grid = byId('chapterGrid');
+    if (!grid) {
+      return;
+    }
+
+    if (!summaries.length) {
+      grid.innerHTML = '<article class="panel"><p class="helper">Chapter model is not available yet.</p></article>';
+      return;
+    }
+
+    grid.innerHTML = summaries.map(function (summary) {
+      var hasPractice = summary.flashcardTotal || summary.quizTotal;
+      return '<article class="chapter-tile">' +
+        '<div class="chapter-tile-head">' +
+          '<div>' +
+            '<p class="card-tag">Chapter</p>' +
+            '<h3>' + summary.name + '</h3>' +
+          '</div>' +
+          '<span class="result-chip">' + (summary.weakTotal + summary.missedTotal) + ' weak</span>' +
+        '</div>' +
+        '<p class="helper">' + summary.cue + '</p>' +
+        '<div class="metric-strip">' +
+          metricChip('Cards', summary.flashcardTotal) +
+          metricChip('Quiz', summary.quizTotal) +
+          metricChip('Weak', summary.weakTotal) +
+          metricChip('Missed', summary.missedTotal) +
+        '</div>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" data-chapter-id="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Open Chapter</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Chapter Cram</button>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+  }
+
+  function renderChapterOverview(summary) {
+    if (!summary) {
+      return '<p class="helper">No chapter selected.</p>';
+    }
+    return '<div class="split-grid">' +
+      '<article class="panel">' +
+        '<h3>Chapter Tools</h3>' +
+        '<p class="helper">Start with the weakest queue or jump into focused practice for this chapter.</p>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" data-chapter-mode="flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Flashcards</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Quiz</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="mistakes">Mistakes</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Cram</button>' +
+        '</div>' +
+      '</article>' +
+      '<article class="panel">' +
+        '<h3>Chapter Snapshot</h3>' +
+        '<ul class="stat-list">' +
+          '<li><span>Flashcards</span><strong>' + summary.flashcardTotal + '</strong></li>' +
+          '<li><span>Quiz Questions</span><strong>' + summary.quizTotal + '</strong></li>' +
+          '<li><span>Weak Cards</span><strong>' + summary.weakTotal + '</strong></li>' +
+          '<li><span>Missed Questions</span><strong>' + summary.missedTotal + '</strong></li>' +
+        '</ul>' +
+      '</article>' +
+    '</div>';
+  }
+
+  function renderChapterFlashcardPanel(summary) {
+    var preview = summary.flashcardIndexes.slice(0, 4).map(function (index) {
+      var card = state.flashcards[index];
+      var status = state.flashcardStatus[flashcardKey(card, index)] || 'unseen';
+      return '<li><strong>' + card.front + '</strong><span>' + status + '</span></li>';
+    }).join('');
+
+    return '<article class="panel">' +
+      '<h3>Chapter Flashcards</h3>' +
+      '<p class="helper">Drill only the cards classified under ' + summary.name + '.</p>' +
+      '<ul class="mistake-list">' + (preview || '<li>No flashcards in this chapter.</li>') + '</ul>' +
+      '<div class="actions">' +
+        '<button class="btn btn-primary" data-action="chapter-drill-flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Drill Chapter Deck</button>' +
+        '<button class="btn btn-ghost" data-chapter-mode="mistakes">Review Weak Cards</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderChapterQuizPanel(summary) {
+    var preview = summary.questionIndexes.slice(0, 4).map(function (index) {
+      var question = state.questions[index];
+      var missed = state.missedQuestions[questionKey(question, index)] ? 'missed' : 'ready';
+      return '<li><strong>' + question.question + '</strong><span>' + missed + '</span></li>';
+    }).join('');
+
+    return '<article class="panel">' +
+      '<h3>Chapter Quiz</h3>' +
+      '<p class="helper">Practice only the quiz questions classified under this chapter.</p>' +
+      '<ul class="mistake-list">' + (preview || '<li>No quiz questions in this chapter.</li>') + '</ul>' +
+      '<div class="actions">' +
+        '<button class="btn btn-primary" data-action="chapter-practice-quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Practice Chapter Quiz</button>' +
+        '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Mix Into Cram</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderChapterMistakesPanel(summary) {
+    var weakCards = summary.flashcardIndexes.map(function (index) {
+      var card = state.flashcards[index];
+      var status = state.flashcardStatus[flashcardKey(card, index)];
+      if (status !== 'unsure' && status !== 'missed') {
+        return '';
+      }
+      return '<li><strong>' + card.front + '</strong><span>' + status + '</span></li>';
+    }).filter(Boolean).join('');
+
+    var missedQuestions = summary.questionIndexes.map(function (index) {
+      var question = state.questions[index];
+      var entry = state.missedQuestions[questionKey(question, index)];
+      if (!entry) {
+        return '';
+      }
+      return '<li><strong>' + question.question + '</strong><span>missed</span></li>';
+    }).filter(Boolean).join('');
+
+    return '<div class="split-grid">' +
+      '<article class="panel">' +
+        '<h3>Weak Flashcards</h3>' +
+        '<ul class="mistake-list">' + (weakCards || '<li>No weak cards in this chapter.</li>') + '</ul>' +
+      '</article>' +
+      '<article class="panel">' +
+        '<h3>Missed Quiz Questions</h3>' +
+        '<ul class="mistake-list">' + (missedQuestions || '<li>No missed questions in this chapter.</li>') + '</ul>' +
+      '</article>' +
+    '</div>';
+  }
+
+  function renderChapterWorkspace() {
+    var summary = getSelectedChapterSummary();
+    if (!summary) {
+      setText('#chapterTitle', 'Chapter');
+      setText('#chapterCue', 'Choose a chapter from the playground.');
+      setHtml('#chapterMetrics', '');
+      setHtml('#chapterPanel', '<p class="helper">No chapter data available.</p>');
+      return;
+    }
+
+    setText('#chapterTitle', summary.name);
+    setText('#chapterCue', summary.cue);
+    setHtml('#chapterMetrics',
+      metricChip('Cards', summary.flashcardTotal) +
+      metricChip('Quiz', summary.quizTotal) +
+      metricChip('Weak', summary.weakTotal) +
+      metricChip('Missed', summary.missedTotal)
+    );
+
+    queryAll('[data-chapter-mode]').forEach(function (button) {
+      var active = button.getAttribute('data-chapter-mode') === state.chapterMode;
+      button.classList.toggle('is-active', active);
+    });
+
+    if (state.chapterMode === 'overview') {
+      setHtml('#chapterPanel', renderChapterOverview(summary));
+    } else if (state.chapterMode === 'flashcards') {
+      setHtml('#chapterPanel', renderChapterFlashcardPanel(summary));
+    } else if (state.chapterMode === 'quiz') {
+      setHtml('#chapterPanel', renderChapterQuizPanel(summary));
+    } else if (state.chapterMode === 'mistakes') {
+      setHtml('#chapterPanel', renderChapterMistakesPanel(summary));
+    } else if (state.chapterMode === 'cram') {
+      setHtml('#chapterPanel',
+        '<article class="panel">' +
+          '<h3>Chapter Cram</h3>' +
+          '<p class="helper">Mix up to ' + CRAM_FLASHCARD_COUNT + ' flashcards and ' + CRAM_QUIZ_COUNT + ' quiz questions from this chapter.</p>' +
+          '<div class="actions">' +
+            '<button class="btn btn-primary" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Start Chapter Cram</button>' +
+          '</div>' +
+        '</article>'
+      );
+    } else {
+      setHtml('#chapterPanel', '<article class="panel"><h3>' + summary.name + ' ' + state.chapterMode + '</h3><p class="helper">This chapter tool is ready for filtered practice wiring.</p></article>');
+    }
+    queueMathTypeset();
+  }
+
   function updateDashboard() {
     ensureDailyGoalDate();
     setText('[data-bind="flashcard-total"], #dashboardFlashcardTotal', String(state.flashcards.length));
@@ -208,6 +416,7 @@
     setText('[data-bind="quiz-title"], #quizTitle', state.quizTitle || 'Quiz');
     setText('#examCountdown', getExamCountdownText());
     setText('#dailyGoalProgress', state.dailyGoal.completed + ' / ' + state.dailyGoal.target);
+    renderChapterGrid();
     queueMathTypeset();
   }
 
@@ -243,6 +452,8 @@
       renderMistakes();
     } else if (view === 'cram') {
       renderCram();
+    } else if (view === 'chapter') {
+      renderChapterWorkspace();
     }
   }
 
@@ -443,6 +654,41 @@
     switchView('cram');
   }
 
+  function startChapterCram(summary) {
+    if (!summary) {
+      return;
+    }
+    var cardIndices = shuffle(summary.flashcardIndexes).slice(0, CRAM_FLASHCARD_COUNT);
+    var questionIndices = shuffle(summary.questionIndexes).slice(0, CRAM_QUIZ_COUNT);
+
+    state.cramFlashcardOrder = cardIndices;
+    state.cramQuizOrder = questionIndices;
+    state.cramQueue = cardIndices.map(function (idx) {
+      return { type: 'flashcard', index: idx };
+    }).concat(questionIndices.map(function (idx) {
+      return { type: 'quiz', index: idx };
+    }));
+
+    if (!state.cramQueue.length) {
+      renderChapterWorkspace();
+      return;
+    }
+
+    state.cramQueue = shuffle(state.cramQueue);
+    state.cramIndex = 0;
+    state.cramQuizScore = 0;
+    state.cramStartedAt = Date.now();
+
+    persist(STORAGE_KEYS.lastSession, {
+      startedAt: state.cramStartedAt,
+      chapter: summary.id,
+      flashcards: cardIndices,
+      questions: questionIndices
+    });
+
+    switchView('cram');
+  }
+
   function renderCram() {
     var current = state.cramQueue[state.cramIndex];
     setText('[data-bind="cram-progress"], #cramProgress', state.cramQueue.length ? (state.cramIndex + 1) + ' / ' + state.cramQueue.length : '0 / 0');
@@ -625,8 +871,30 @@
 
   function bindEvents() {
     document.addEventListener('click', function (event) {
-      var target = event.target.closest('[data-route], [data-action]');
+      var target = event.target.closest('[data-route], [data-action], [data-chapter-id], [data-chapter-mode], [data-chapter-cram]');
       if (!target) {
+        return;
+      }
+
+      var chapterId = target.getAttribute('data-chapter-id');
+      if (chapterId) {
+        state.selectedChapterId = chapterId;
+        state.chapterMode = 'overview';
+        switchView('chapter');
+        return;
+      }
+
+      var chapterMode = target.getAttribute('data-chapter-mode');
+      if (chapterMode) {
+        state.chapterMode = chapterMode;
+        renderChapterWorkspace();
+        return;
+      }
+
+      var chapterCram = target.getAttribute('data-chapter-cram');
+      if (chapterCram) {
+        state.selectedChapterId = chapterCram;
+        startChapterCram(getSelectedChapterSummary());
         return;
       }
 
@@ -645,6 +913,18 @@
         loadData();
       } else if (action === 'start-cram') {
         startCramSession();
+      } else if (action === 'chapter-drill-flashcards') {
+        var flashcardSummary = getSelectedChapterSummary();
+        state.flashcardOrder = flashcardSummary ? flashcardSummary.flashcardIndexes.slice() : [];
+        state.flashcardIndex = 0;
+        state.flashcardFlipped = false;
+        switchView('flashcards');
+      } else if (action === 'chapter-practice-quiz') {
+        var quizSummary = getSelectedChapterSummary();
+        state.quizOrder = quizSummary ? quizSummary.questionIndexes.slice() : [];
+        state.quizIndex = 0;
+        setQuizQuestionState(false);
+        switchView('quiz');
       } else if (action === 'flashcard-flip') {
         state.flashcardFlipped = !state.flashcardFlipped;
         renderFlashcards();
