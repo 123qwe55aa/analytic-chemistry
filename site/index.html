@@ -66,6 +66,21 @@
                 <li><p>Wrong quiz answers auto-enter the mistakes queue.</p></li>
                 <li><p>Use References for formula map, audio, and lecture PDFs.</p></li>
               </ol>
+              <div class="goal-block">
+                <h3>Daily Goal</h3>
+                <p class="helper">
+                  Exam countdown:
+                  <strong id="examCountdown">--</strong>
+                </p>
+                <p class="helper">
+                  Progress:
+                  <strong id="dailyGoalProgress">0 / 30</strong>
+                </p>
+                <div class="actions">
+                  <button class="btn btn-primary" data-action="goal-add">+1 Done</button>
+                  <button class="btn btn-ghost" data-action="goal-reset">Reset Today</button>
+                </div>
+              </div>
             </article>
           </div>
         </section>
@@ -161,6 +176,9 @@
             <h3>Missed Quiz Questions</h3>
             <ul id="mistakesQuizList" data-bind="mistakes-quiz" class="mistake-list"></ul>
             <button id="clearMissedQuestions" class="btn btn-ghost" data-action="clear-missed-questions">Clear Missed Questions</button>
+
+            <h3>Topic Hotspots</h3>
+            <ul id="mistakesTopicList" data-bind="mistakes-topics" class="mistake-list"></ul>
           </article>
         </section>
 

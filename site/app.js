@@ -4,7 +4,8 @@
   var STORAGE_KEYS = {
     flashcardStatus: 'chem-cram.flashcardStatus',
     missedQuestions: 'chem-cram.missedQuestions',
-    lastSession: 'chem-cram.lastSession'
+    lastSession: 'chem-cram.lastSession',
+    dailyGoal: 'chem-cram.dailyGoal'
   };
 
   var CRAM_FLASHCARD_COUNT = 5;
@@ -34,7 +35,12 @@
     cramFlashcardOrder: [],
     cramQuizOrder: [],
     cramQuizScore: 0,
-    cramStartedAt: null
+    cramStartedAt: null,
+    dailyGoal: {
+      date: '',
+      completed: 0,
+      target: 30
+    }
   };
 
   function byId(id) {
@@ -94,9 +100,43 @@
   function loadPersisted() {
     var flashcardStatus = safeParse(localStorage.getItem(STORAGE_KEYS.flashcardStatus), {});
     var missedQuestions = safeParse(localStorage.getItem(STORAGE_KEYS.missedQuestions), {});
+    var dailyGoal = safeParse(localStorage.getItem(STORAGE_KEYS.dailyGoal), {});
 
     state.flashcardStatus = flashcardStatus && typeof flashcardStatus === 'object' ? flashcardStatus : {};
     state.missedQuestions = missedQuestions && typeof missedQuestions === 'object' ? missedQuestions : {};
+    if (dailyGoal && typeof dailyGoal === 'object') {
+      state.dailyGoal.date = typeof dailyGoal.date === 'string' ? dailyGoal.date : '';
+      state.dailyGoal.completed = Number(dailyGoal.completed) || 0;
+      state.dailyGoal.target = Number(dailyGoal.target) || 30;
+    }
+  }
+
+  function getTodayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function ensureDailyGoalDate() {
+    var today = getTodayKey();
+    if (state.dailyGoal.date !== today) {
+      state.dailyGoal.date = today;
+      state.dailyGoal.completed = 0;
+      persist(STORAGE_KEYS.dailyGoal, state.dailyGoal);
+    }
+  }
+
+  function getExamCountdownText() {
+    // Assumption: final exam is 14 days from today for first-run planning.
+    var target = new Date();
+    target.setDate(target.getDate() + 14);
+    target.setHours(0, 0, 0, 0);
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var diff = Math.ceil((target.getTime() - now.getTime()) / 86400000);
+    if (diff <= 0) {
+      return 'Today';
+    }
+    return diff + ' days left';
   }
 
   function shuffle(list) {
@@ -144,12 +184,15 @@
   }
 
   function updateDashboard() {
+    ensureDailyGoalDate();
     setText('[data-bind="flashcard-total"], #dashboardFlashcardTotal', String(state.flashcards.length));
     setText('[data-bind="quiz-total"], #dashboardQuizTotal', String(state.questions.length));
     setText('[data-bind="weak-total"], #dashboardWeakTotal', String(weakFlashcardCount()));
     setText('[data-bind="missed-total"], #dashboardMissedTotal', String(missedQuizCount()));
     setText('[data-bind="flashcard-title"], #flashcardsTitle', state.flashcardsTitle || 'Flashcards');
     setText('[data-bind="quiz-title"], #quizTitle', state.quizTitle || 'Quiz');
+    setText('#examCountdown', getExamCountdownText());
+    setText('#dailyGoalProgress', state.dailyGoal.completed + ' / ' + state.dailyGoal.target);
   }
 
   function renderError() {
@@ -499,8 +542,38 @@
       ? missedQuestions.map(function (entry) { return '<li><strong>' + entry.question + '</strong> Selected: ' + entry.selectedAnswer + '</li>'; }).join('')
       : '<li>No missed quiz questions.</li>';
 
+    var topicCounts = {};
+    var topicPatterns = [
+      { key: 'Ksp/Solubility', re: /(ksp|solub|溶|沉淀)/i },
+      { key: 'Acid-Base/Titration', re: /(acid|base|titrat|buffer|滴定|酸|碱)/i },
+      { key: 'Complexation/EDTA', re: /(complex|edta|coordination|配位)/i },
+      { key: 'Redox/Electrochem', re: /(redox|electro|nernst|氧化还原|电极|电化学)/i }
+    ];
+
+    missedQuestions.forEach(function (entry) {
+      var text = (entry.question || '') + ' ' + (entry.selectedAnswer || '');
+      var matched = false;
+      topicPatterns.forEach(function (item) {
+        if (item.re.test(text)) {
+          topicCounts[item.key] = (topicCounts[item.key] || 0) + 1;
+          matched = true;
+        }
+      });
+      if (!matched) {
+        topicCounts.Other = (topicCounts.Other || 0) + 1;
+      }
+    });
+
+    var topicList = Object.keys(topicCounts).sort(function (a, b) {
+      return topicCounts[b] - topicCounts[a];
+    });
+    var topicHtml = topicList.length
+      ? topicList.map(function (name) { return '<li><strong>' + name + '</strong>: ' + topicCounts[name] + ' item(s)</li>'; }).join('')
+      : '<li>No topic hotspots yet.</li>';
+
     setHtml('[data-bind="mistakes-weak"], #mistakesWeakList', weakHtml);
     setHtml('[data-bind="mistakes-quiz"], #mistakesQuizList', missedHtml);
+    setHtml('[data-bind="mistakes-topics"], #mistakesTopicList', topicHtml);
 
     setDisabled('#clearWeakCards, [data-action="clear-weak-cards"]', weakCards.length === 0);
     setDisabled('#clearMissedQuestions, [data-action="clear-missed-questions"]', missedQuestions.length === 0);
@@ -581,6 +654,16 @@
         submitCramQuiz();
       } else if (action === 'cram-rate') {
         rateCramFlashcard(target.getAttribute('data-value'));
+      } else if (action === 'goal-add') {
+        ensureDailyGoalDate();
+        state.dailyGoal.completed += 1;
+        persist(STORAGE_KEYS.dailyGoal, state.dailyGoal);
+        updateDashboard();
+      } else if (action === 'goal-reset') {
+        ensureDailyGoalDate();
+        state.dailyGoal.completed = 0;
+        persist(STORAGE_KEYS.dailyGoal, state.dailyGoal);
+        updateDashboard();
       }
     });
 

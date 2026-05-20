@@ -295,6 +295,12 @@ h3 {
   border-color: #8ab0b9;
 }
 
+.goal-block {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+
 .stack {
   display: grid;
   gap: 0.55rem;
