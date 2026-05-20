@@ -36,6 +36,8 @@
     cramQuizOrder: [],
     cramQuizScore: 0,
     cramStartedAt: null,
+    selectedChapterId: 'solubility',
+    chapterMode: 'overview',
     dailyGoal: {
       date: '',
       completed: 0,
@@ -198,6 +200,129 @@
     return count;
   }
 
+  function chapterModel() {
+    return window.ChapterModel;
+  }
+
+  function getChapterSummaries() {
+    if (!chapterModel()) {
+      return [];
+    }
+    return chapterModel().buildChapterSummaries(
+      state.flashcards,
+      state.questions,
+      state.flashcardStatus,
+      state.missedQuestions
+    );
+  }
+
+  function getSelectedChapterSummary() {
+    var summaries = getChapterSummaries();
+    return summaries.find(function (summary) {
+      return summary.id === state.selectedChapterId;
+    }) || summaries[0] || null;
+  }
+
+  function metricChip(label, value) {
+    return '<span class="result-chip"><span>' + label + '</span> <strong>' + value + '</strong></span>';
+  }
+
+  function renderChapterGrid() {
+    var summaries = getChapterSummaries();
+    var grid = byId('chapterGrid');
+    if (!grid) {
+      return;
+    }
+
+    if (!summaries.length) {
+      grid.innerHTML = '<article class="panel"><p class="helper">Chapter model is not available yet.</p></article>';
+      return;
+    }
+
+    grid.innerHTML = summaries.map(function (summary) {
+      var hasPractice = summary.flashcardTotal || summary.quizTotal;
+      return '<article class="chapter-tile">' +
+        '<div class="chapter-tile-head">' +
+          '<div>' +
+            '<p class="card-tag">Chapter</p>' +
+            '<h3>' + summary.name + '</h3>' +
+          '</div>' +
+          '<span class="result-chip">' + (summary.weakTotal + summary.missedTotal) + ' weak</span>' +
+        '</div>' +
+        '<p class="helper">' + summary.cue + '</p>' +
+        '<div class="metric-strip">' +
+          metricChip('Cards', summary.flashcardTotal) +
+          metricChip('Quiz', summary.quizTotal) +
+          metricChip('Weak', summary.weakTotal) +
+          metricChip('Missed', summary.missedTotal) +
+        '</div>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" data-chapter-id="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Open Chapter</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Chapter Cram</button>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+  }
+
+  function renderChapterOverview(summary) {
+    if (!summary) {
+      return '<p class="helper">No chapter selected.</p>';
+    }
+    return '<div class="split-grid">' +
+      '<article class="panel">' +
+        '<h3>Chapter Tools</h3>' +
+        '<p class="helper">Start with the weakest queue or jump into focused practice for this chapter.</p>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" data-chapter-mode="flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Flashcards</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Quiz</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="mistakes">Mistakes</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Cram</button>' +
+        '</div>' +
+      '</article>' +
+      '<article class="panel">' +
+        '<h3>Chapter Snapshot</h3>' +
+        '<ul class="stat-list">' +
+          '<li><span>Flashcards</span><strong>' + summary.flashcardTotal + '</strong></li>' +
+          '<li><span>Quiz Questions</span><strong>' + summary.quizTotal + '</strong></li>' +
+          '<li><span>Weak Cards</span><strong>' + summary.weakTotal + '</strong></li>' +
+          '<li><span>Missed Questions</span><strong>' + summary.missedTotal + '</strong></li>' +
+        '</ul>' +
+      '</article>' +
+    '</div>';
+  }
+
+  function renderChapterWorkspace() {
+    var summary = getSelectedChapterSummary();
+    if (!summary) {
+      setText('#chapterTitle', 'Chapter');
+      setText('#chapterCue', 'Choose a chapter from the playground.');
+      setHtml('#chapterMetrics', '');
+      setHtml('#chapterPanel', '<p class="helper">No chapter data available.</p>');
+      return;
+    }
+
+    setText('#chapterTitle', summary.name);
+    setText('#chapterCue', summary.cue);
+    setHtml('#chapterMetrics',
+      metricChip('Cards', summary.flashcardTotal) +
+      metricChip('Quiz', summary.quizTotal) +
+      metricChip('Weak', summary.weakTotal) +
+      metricChip('Missed', summary.missedTotal)
+    );
+
+    queryAll('[data-chapter-mode]').forEach(function (button) {
+      var active = button.getAttribute('data-chapter-mode') === state.chapterMode;
+      button.classList.toggle('is-active', active);
+    });
+
+    if (state.chapterMode === 'overview') {
+      setHtml('#chapterPanel', renderChapterOverview(summary));
+    } else {
+      setHtml('#chapterPanel', '<article class="panel"><h3>' + summary.name + ' ' + state.chapterMode + '</h3><p class="helper">This chapter tool is ready for filtered practice wiring.</p></article>');
+    }
+    queueMathTypeset();
+  }
+
   function updateDashboard() {
     ensureDailyGoalDate();
     setText('[data-bind="flashcard-total"], #dashboardFlashcardTotal', String(state.flashcards.length));
@@ -208,6 +333,7 @@
     setText('[data-bind="quiz-title"], #quizTitle', state.quizTitle || 'Quiz');
     setText('#examCountdown', getExamCountdownText());
     setText('#dailyGoalProgress', state.dailyGoal.completed + ' / ' + state.dailyGoal.target);
+    renderChapterGrid();
     queueMathTypeset();
   }
 
@@ -243,6 +369,8 @@
       renderMistakes();
     } else if (view === 'cram') {
       renderCram();
+    } else if (view === 'chapter') {
+      renderChapterWorkspace();
     }
   }
 
@@ -625,8 +753,23 @@
 
   function bindEvents() {
     document.addEventListener('click', function (event) {
-      var target = event.target.closest('[data-route], [data-action]');
+      var target = event.target.closest('[data-route], [data-action], [data-chapter-id], [data-chapter-mode], [data-chapter-cram]');
       if (!target) {
+        return;
+      }
+
+      var chapterId = target.getAttribute('data-chapter-id');
+      if (chapterId) {
+        state.selectedChapterId = chapterId;
+        state.chapterMode = 'overview';
+        switchView('chapter');
+        return;
+      }
+
+      var chapterMode = target.getAttribute('data-chapter-mode');
+      if (chapterMode) {
+        state.chapterMode = chapterMode;
+        renderChapterWorkspace();
         return;
       }
 

@@ -42,3 +42,22 @@ test('builds chapter summaries from cards, questions, and local progress', () =>
   assert.equal(byId['acid-base'].quizTotal, 1);
   assert.equal(byId.complexation.flashcardTotal, 1);
 });
+
+test('chapter summaries expose indexes for filtered study flows', () => {
+  const cards = [
+    { front: 'Ksp precipitation', back: 'solubility' },
+    { front: 'KMnO4 redox', back: 'permanganate' }
+  ];
+  const questions = [
+    { question: 'EDTA complexation', answerOptions: [] },
+    { question: 'buffer pH acid base', answerOptions: [] }
+  ];
+
+  const summaries = buildChapterSummaries(cards, questions, {}, {});
+  const byId = Object.fromEntries(summaries.map((summary) => [summary.id, summary]));
+
+  assert.deepEqual(byId.solubility.flashcardIndexes, [0]);
+  assert.deepEqual(byId.redox.flashcardIndexes, [1]);
+  assert.deepEqual(byId.complexation.questionIndexes, [0]);
+  assert.deepEqual(byId['acid-base'].questionIndexes, [1]);
+});
