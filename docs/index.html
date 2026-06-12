@@ -28,8 +28,8 @@
     <div id="appRoot" class="app-shell app-root" data-app-root="true">
       <header class="topbar" role="banner">
         <div class="brand">
-          <p class="brand-kicker">Final Exam Sprint Console</p>
-          <h1>Analytical Chemistry Cram Workspace</h1>
+          <p class="brand-kicker">The Lab Notes</p>
+          <h1>Analytical Chemistry</h1>
         </div>
         <div class="session-meta" aria-label="Session overview">
           <p><span>Flashcards</span><strong id="dashboardFlashcardTotal">0</strong></p>
@@ -52,19 +52,37 @@
       <main class="workspace" role="main">
         <section id="view-dashboard" class="view" data-view="dashboard">
           <section class="playground-hero" aria-labelledby="dashboard-heading">
-            <div>
-              <p class="brand-kicker">Chapter Playground</p>
-              <h2 id="dashboard-heading">Choose a chapter. Drill the weak spots.</h2>
-              <p class="helper">Jump into focused flashcards, quiz practice, cram mode, or mistake review by chemistry chapter.</p>
+            <div class="hero-copy">
+              <p class="brand-kicker">Final Exam · June 23 · 13:00–14:30</p>
+              <h2 id="dashboard-heading">Make every study session count.</h2>
+              <p class="hero-deck">A focused field guide for analytical chemistry: review one chapter, test your recall, then return to the ideas that need another pass.</p>
+              <div class="actions">
+                <button class="btn btn-primary" data-action="start-cram">Start a global cram</button>
+                <button class="btn btn-ghost" data-route="mistakes">Review mistakes</button>
+              </div>
             </div>
-            <div class="actions">
-              <button class="btn btn-primary" data-action="start-cram">Global Cram</button>
-              <button class="btn btn-ghost" data-route="mistakes">All Mistakes</button>
-              <button class="btn btn-ghost" data-action="goal-add">+1 Done</button>
-              <button class="btn btn-ghost" data-action="goal-reset">Reset Today</button>
-            </div>
+            <aside class="countdown-card" aria-label="Exam countdown">
+              <p class="countdown-label">Time until the exam</p>
+              <strong id="examCountdown" class="countdown-value">Loading...</strong>
+              <p id="examCountdownNote" class="countdown-note">June 23, 13:00–14:30</p>
+              <div class="goal-block">
+                <span>Today's practice</span>
+                <strong id="dailyGoalProgress">0 / 30</strong>
+              </div>
+              <div class="actions compact-actions">
+                <button class="btn btn-small btn-ghost" data-action="goal-add">+1 done</button>
+                <button class="btn btn-small btn-text" data-action="goal-reset">Reset</button>
+              </div>
+            </aside>
           </section>
 
+          <div class="section-heading">
+            <div>
+              <p class="brand-kicker">Study by chapter</p>
+              <h2>Today’s reading list</h2>
+            </div>
+            <p>Start broad, then follow the weak spots.</p>
+          </div>
           <section class="chapter-grid" id="chapterGrid" aria-label="Chemistry chapters"></section>
         </section>
 

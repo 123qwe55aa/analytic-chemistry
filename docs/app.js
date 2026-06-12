@@ -10,6 +10,9 @@
 
   var CRAM_FLASHCARD_COUNT = 5;
   var CRAM_QUIZ_COUNT = 5;
+  var EXAM_START = new Date(2026, 5, 23, 13, 0, 0);
+  var EXAM_END = new Date(2026, 5, 23, 14, 30, 0);
+  var countdownTimer = null;
 
   var state = {
     loading: true,
@@ -143,17 +146,32 @@
   }
 
   function getExamCountdownText() {
-    // Assumption: final exam is 14 days from today for first-run planning.
-    var target = new Date();
-    target.setDate(target.getDate() + 14);
-    target.setHours(0, 0, 0, 0);
     var now = new Date();
-    now.setHours(0, 0, 0, 0);
-    var diff = Math.ceil((target.getTime() - now.getTime()) / 86400000);
-    if (diff <= 0) {
-      return 'Today';
+    if (now >= EXAM_END) {
+      return 'Exam complete';
     }
-    return diff + ' days left';
+    if (now >= EXAM_START) {
+      return 'Exam in progress';
+    }
+
+    var remaining = EXAM_START.getTime() - now.getTime();
+    var days = Math.floor(remaining / 86400000);
+    var hours = Math.floor((remaining % 86400000) / 3600000);
+    var minutes = Math.floor((remaining % 3600000) / 60000);
+    var seconds = Math.floor((remaining % 60000) / 1000);
+    return days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+  }
+
+  function updateExamCountdown() {
+    setText('#examCountdown', getExamCountdownText());
+    var now = new Date();
+    var note = 'June 23, 13:00–14:30';
+    if (now >= EXAM_START && now < EXAM_END) {
+      note = 'Stay steady. You have 90 minutes.';
+    } else if (now >= EXAM_END) {
+      note = 'June 23, 13:00–14:30 · Finished';
+    }
+    setText('#examCountdownNote', note);
   }
 
   function shuffle(list) {
@@ -414,7 +432,7 @@
     setText('[data-bind="missed-total"], #dashboardMissedTotal', String(missedQuizCount()));
     setText('[data-bind="flashcard-title"], #flashcardsTitle', state.flashcardsTitle || 'Flashcards');
     setText('[data-bind="quiz-title"], #quizTitle', state.quizTitle || 'Quiz');
-    setText('#examCountdown', getExamCountdownText());
+    updateExamCountdown();
     setText('#dailyGoalProgress', state.dailyGoal.completed + ' / ' + state.dailyGoal.target);
     renderChapterGrid();
     queueMathTypeset();
@@ -1042,6 +1060,10 @@
     bindEvents();
     switchView('dashboard');
     loadData();
+    updateExamCountdown();
+    if (!countdownTimer) {
+      countdownTimer = setInterval(updateExamCountdown, 1000);
+    }
   }
 
   if (document.readyState === 'loading') {
