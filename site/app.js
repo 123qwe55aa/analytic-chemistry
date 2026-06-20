@@ -927,6 +927,12 @@
         return;
       }
 
+      if (action === 'guide-chapter-overview' || action === 'guide-chapter-quiz') {
+        state.chapterMode = action === 'guide-chapter-quiz' ? 'quiz' : 'overview';
+        switchView('chapter');
+        return;
+      }
+
       if (action === 'retry-load') {
         loadData();
       } else if (action === 'start-cram') {
