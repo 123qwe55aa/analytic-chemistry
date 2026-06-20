@@ -530,5 +530,7 @@ git commit -m "chore: publish guided study system"
 ## Execution Notes
 
 - Do not let Hermes and Codex write to the same checkout concurrently.
-- Hermes may be used for the bounded source/deploy parity check or a read-only test run after Codex finishes editing. Codex retains data-model review, dirty-worktree conflict handling, browser verification, and final acceptance.
+- Codex owns architecture, integration, dirty-worktree conflict handling, browser verification, and final acceptance.
+- Hermes should execute bounded repeatable tasks in a separate remote worktree: Task 1, Task 3 after Task 2 is integrated, and Task 6 source/deploy synchronization. Each delegation must name an exclusive file set, require tests, and return a Git commit for Codex review.
+- Codex must inspect and integrate each Hermes commit before starting any dependent Hermes task. Independent tasks may overlap only when their files and worktrees are disjoint.
 - Before each commit, inspect `git diff --cached` so pre-existing user modifications are not accidentally included beyond files intentionally changed for this feature.
