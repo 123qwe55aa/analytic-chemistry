@@ -29,3 +29,18 @@ test('all study content has stable chapter metadata', () => {
   assertMetadata(flashcards, 'f');
   assertMetadata(questions, 'q');
 });
+
+test('dashboard exposes the bilingual four-step study flow', () => {
+  const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);
+  assert.equal((html.match(/class="guide-step"/g) || []).length, 4);
+  assert.match(html, /data-action="guide-chapter-overview"/);
+  assert.match(html, /data-action="guide-chapter-quiz"/);
+  assert.match(html, /data-route="mistakes"/);
+  assert.match(html, /data-action="start-cram"/);
+  assert.match(html, />Dashboard \/ 首页</);
+  assert.match(html, />Flashcards \/ 卡片记忆</);
+  assert.match(html, />Quiz \/ 测验</);
+  assert.match(html, />Mistakes \/ 错题本</);
+  assert.match(html, />References \/ 课件资料</);
+});

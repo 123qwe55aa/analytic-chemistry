@@ -40,13 +40,13 @@
       </header>
 
       <nav class="view-tabs" aria-label="Workspace views">
-        <button class="tab active" data-route="dashboard" aria-current="page">Dashboard</button>
-        <button class="tab" data-route="chapter">Chapter</button>
-        <button class="tab" data-route="cram">Cram</button>
-        <button class="tab" data-route="flashcards">Flashcards</button>
-        <button class="tab" data-route="quiz">Quiz</button>
-        <button class="tab" data-route="mistakes">Mistakes</button>
-        <button class="tab" data-route="references">References</button>
+        <button class="tab active" data-route="dashboard" aria-current="page">Dashboard / 首页</button>
+        <button class="tab" data-route="chapter">Chapter / 章节</button>
+        <button class="tab" data-route="cram">Cram / 冲刺</button>
+        <button class="tab" data-route="flashcards">Flashcards / 卡片记忆</button>
+        <button class="tab" data-route="quiz">Quiz / 测验</button>
+        <button class="tab" data-route="mistakes">Mistakes / 错题本</button>
+        <button class="tab" data-route="references">References / 课件资料</button>
       </nav>
 
       <main class="workspace" role="main">
@@ -57,8 +57,8 @@
               <h2 id="dashboard-heading">Make every study session count.</h2>
               <p class="hero-deck">A focused field guide for analytical chemistry: review one chapter, test your recall, then return to the ideas that need another pass.</p>
               <div class="actions">
-                <button class="btn btn-primary" data-action="start-cram">Start a global cram</button>
-                <button class="btn btn-ghost" data-route="mistakes">Review mistakes</button>
+                <button class="btn btn-primary" data-action="start-cram">Start Global Cram / 开始全局冲刺</button>
+                <button class="btn btn-ghost" data-route="mistakes">Review Mistakes / 回顾错题</button>
               </div>
             </div>
             <aside class="countdown-card" aria-label="Exam countdown">
@@ -76,6 +76,40 @@
             </aside>
           </section>
 
+          <section class="study-guide" aria-labelledby="study-guide-heading">
+            <div class="guide-intro">
+              <p class="brand-kicker">A clear route through the material / 清晰学习路径</p>
+              <h2 id="study-guide-heading">Recommended Study Flow / 推荐学习流程</h2>
+              <p>Follow the sequence once, then repeat from your weak spots. / 完成一轮后，从薄弱点继续循环。</p>
+            </div>
+            <ol class="guide-steps">
+              <li class="guide-step">
+                <span class="guide-number">01</span>
+                <button class="guide-link" data-action="guide-chapter-overview">
+                  <strong>Read Chapter Notes</strong><span>阅读章节笔记</span>
+                </button>
+              </li>
+              <li class="guide-step">
+                <span class="guide-number">02</span>
+                <button class="guide-link" data-action="guide-chapter-quiz">
+                  <strong>Do Chapter Quiz</strong><span>完成章节测验</span>
+                </button>
+              </li>
+              <li class="guide-step">
+                <span class="guide-number">03</span>
+                <button class="guide-link" data-route="mistakes">
+                  <strong>Review Mistakes</strong><span>回顾错题</span>
+                </button>
+              </li>
+              <li class="guide-step">
+                <span class="guide-number">04</span>
+                <button class="guide-link" data-action="start-cram">
+                  <strong>Run Global Cram</strong><span>全局冲刺复习</span>
+                </button>
+              </li>
+            </ol>
+          </section>
+
           <div class="section-heading">
             <div>
               <p class="brand-kicker">Study by chapter</p>
@@ -88,7 +122,7 @@
 
         <section id="view-cram" class="view" data-view="cram" hidden>
           <article class="panel">
-            <h2>Cram Session</h2>
+            <h2>Cram Session / 冲刺训练</h2>
             <p class="helper">Mixed sequence for rapid exam recall.</p>
             <div class="quiz-row">
               <div class="result-chip">Progress: <strong id="cramProgress">0 / 0</strong></div>
@@ -108,7 +142,7 @@
 
         <section id="view-flashcards" class="view" data-view="flashcards" hidden>
           <article class="panel">
-            <h2>Flashcards</h2>
+            <h2>Flashcards / 卡片记忆</h2>
             <p class="helper">
               <span data-bind="flashcard-title" id="flashcardsTitle">Flashcards</span>
               <span class="card-tag" id="flashcardPosition">0 / 0</span>
@@ -141,7 +175,7 @@
 
         <section id="view-quiz" class="view" data-view="quiz" hidden>
           <article class="panel">
-            <h2>Quiz Practice</h2>
+            <h2>Quiz Practice / 测验练习</h2>
             <p class="helper">
               <span data-bind="quiz-title" id="quizTitle">Quiz</span>
               <span class="card-tag" id="quizPosition">0 / 0</span>
@@ -167,7 +201,7 @@
 
         <section id="view-mistakes" class="view" data-view="mistakes" hidden>
           <article class="panel">
-            <h2>Mistakes Loop</h2>
+            <h2>Mistakes Loop / 错题回炉</h2>
             <p class="helper">Clean up weak cards and missed questions before the exam.</p>
 
             <h3>Weak Flashcards</h3>
@@ -194,11 +228,11 @@
               <div class="chapter-metrics" id="chapterMetrics"></div>
             </div>
             <div class="mode-tabs" aria-label="Chapter tools">
-              <button class="mode-tab is-active" data-chapter-mode="overview">Overview</button>
-              <button class="mode-tab" data-chapter-mode="flashcards">Flashcards</button>
-              <button class="mode-tab" data-chapter-mode="quiz">Quiz</button>
-              <button class="mode-tab" data-chapter-mode="cram">Cram</button>
-              <button class="mode-tab" data-chapter-mode="mistakes">Mistakes</button>
+              <button class="mode-tab is-active" data-chapter-mode="overview">Overview / 概览</button>
+              <button class="mode-tab" data-chapter-mode="flashcards">Flashcards / 卡片记忆</button>
+              <button class="mode-tab" data-chapter-mode="quiz">Quiz / 测验</button>
+              <button class="mode-tab" data-chapter-mode="cram">Cram / 冲刺</button>
+              <button class="mode-tab" data-chapter-mode="mistakes">Mistakes / 错题本</button>
             </div>
             <div id="chapterPanel" class="chapter-panel"></div>
           </article>
@@ -206,7 +240,7 @@
 
         <section id="view-references" class="view" data-view="references" hidden>
           <article class="panel">
-            <h2>References</h2>
+            <h2>References / 课件资料</h2>
             <p class="helper">Deep review materials in one place.</p>
 
             <div class="ref-grid">

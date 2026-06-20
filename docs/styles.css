@@ -171,6 +171,20 @@ button, input { font: inherit; }
 .countdown-card .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
 .countdown-card .btn-text { color: #fff; opacity: 0.75; }
 
+.study-guide { padding: 3.5rem 0; border-bottom: 1px solid var(--ink); }
+.guide-intro { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem 2rem; align-items: end; margin-bottom: 1.5rem; }
+.guide-intro .brand-kicker { grid-column: 1 / -1; }
+.guide-intro h2 { margin: 0; font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 500; letter-spacing: -0.04em; }
+.guide-intro > p:last-child { margin: 0; color: var(--muted); }
+.guide-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.guide-step { display: flex; gap: 0.8rem; min-width: 0; padding: 1rem; border-bottom: 1px solid var(--line); }
+.guide-step + .guide-step { border-left: 1px solid var(--line); }
+.guide-number { color: var(--primary); font-size: 0.72rem; font-weight: 800; }
+.guide-link { display: grid; gap: 0.25rem; padding: 0; border: 0; color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+.guide-link strong { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; }
+.guide-link span { color: var(--muted); font-size: 0.82rem; }
+.guide-link:hover strong, .guide-link:focus-visible strong { color: var(--primary); }
+
 .section-heading {
   display: flex;
   align-items: end;
@@ -277,6 +291,8 @@ h2, h3 { margin: 0 0 0.65rem; }
 @media (max-width: 900px) {
   .playground-hero, .split-grid { grid-template-columns: 1fr; }
   .countdown-card { max-width: 520px; }
+  .guide-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .guide-step:nth-child(3) { border-left: 0; }
 }
 
 @media (max-width: 720px) {
@@ -286,6 +302,8 @@ h2, h3 { margin: 0 0 0.65rem; }
   .view-tabs { margin-bottom: 1.5rem; }
   .playground-hero { padding-top: 0; gap: 2rem; }
   .playground-hero h2 { font-size: clamp(3.2rem, 16vw, 5rem); }
+  .guide-intro, .guide-steps { grid-template-columns: 1fr; }
+  .guide-step + .guide-step { border-left: 0; }
   .chapter-grid, .ref-grid { grid-template-columns: 1fr; }
   .chapter-tile, .chapter-tile:nth-child(even), .ref-item:nth-child(even) { padding-left: 0; border-left: 0; }
   .chapter-tile { min-height: 0; padding-right: 0; }
