@@ -61,3 +61,18 @@ test('chapter summaries expose indexes for filtered study flows', () => {
   assert.deepEqual(byId.complexation.questionIndexes, [0]);
   assert.deepEqual(byId['acid-base'].questionIndexes, [1]);
 });
+
+test('prefers valid explicit chapter metadata over matching text', () => {
+  assert.equal(
+    classifyStudyItem({ chapter: 'redox', question: 'Ksp precipitation rule' }),
+    'redox'
+  );
+});
+
+test('falls back to text classification for missing or invalid metadata', () => {
+  assert.equal(classifyStudyItem({ question: 'EDTA complexation' }), 'complexation');
+  assert.equal(
+    classifyStudyItem({ chapter: 'not-a-chapter', question: 'buffer pH titration' }),
+    'acid-base'
+  );
+});

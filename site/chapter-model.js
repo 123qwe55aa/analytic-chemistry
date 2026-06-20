@@ -40,6 +40,11 @@
     }
   ];
 
+  var CHAPTER_IDS = CHAPTERS.reduce(function (lookup, chapter) {
+    lookup[chapter.id] = true;
+    return lookup;
+  }, {});
+
   function flashcardKey(card, index) {
     return card.front + '::' + card.back + '::' + index;
   }
@@ -62,6 +67,10 @@
   }
 
   function classifyStudyItem(item) {
+    if (item && typeof item === 'object' && CHAPTER_IDS[item.chapter]) {
+      return item.chapter;
+    }
+
     var text = typeof item === 'string' ? item : itemText(item);
     for (var i = 0; i < CHAPTERS.length; i += 1) {
       if (CHAPTERS[i].re.test(text)) {
@@ -119,6 +128,7 @@
 
   return {
     CHAPTERS: CHAPTERS,
+    CHAPTER_IDS: CHAPTER_IDS,
     classifyStudyItem: classifyStudyItem,
     buildChapterSummaries: buildChapterSummaries
   };
