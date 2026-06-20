@@ -1,0 +1,8 @@
+{
+  "name": "analytical-chemistry-study-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test site/*.test.js"
+  }
+}
