@@ -38,4 +38,9 @@ test('dashboard exposes the bilingual four-step study flow', () => {
   assert.match(html, /data-action="guide-chapter-quiz"/);
   assert.match(html, /data-route="mistakes"/);
   assert.match(html, /data-action="start-cram"/);
+  assert.match(html, />Dashboard \/ 首页</);
+  assert.match(html, />Flashcards \/ 卡片记忆</);
+  assert.match(html, />Quiz \/ 测验</);
+  assert.match(html, />Mistakes \/ 错题本</);
+  assert.match(html, />References \/ 课件资料</);
 });
