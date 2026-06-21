@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 
 const {
   CHAPTERS,
+  CHAPTER_OVERRIDES_BY_ID,
   classifyStudyItem,
   buildChapterSummaries
 } = require('./chapter-model.js');
@@ -66,6 +67,35 @@ test('prefers valid explicit chapter metadata over matching text', () => {
   assert.equal(
     classifyStudyItem({ chapter: 'redox', question: 'Ksp precipitation rule' }),
     'redox'
+  );
+});
+
+test('uses curated overrides before stale explicit metadata', () => {
+  assert.equal(Object.keys(CHAPTER_OVERRIDES_BY_ID).length >= 10, true);
+  assert.equal(
+    classifyStudyItem({
+      id: 'f020',
+      chapter: 'solubility',
+      front: 'What reagent removes excess SnCl2 after reducing Fe3+?',
+      back: 'HgCl2 forms a white precipitate.'
+    }),
+    'redox'
+  );
+  assert.equal(
+    classifyStudyItem({
+      id: 'f045',
+      chapter: 'acid-base',
+      front: 'Which metal indicator is used for Mg2+ and Zn2+ at pH 10?'
+    }),
+    'complexation'
+  );
+  assert.equal(
+    classifyStudyItem({
+      id: 'q005',
+      chapter: 'redox',
+      question: 'Which hybridization and geometry are associated with [Ni(CN)4]2-?'
+    }),
+    'complexation'
   );
 });
 
