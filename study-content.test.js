@@ -138,6 +138,18 @@ test('homework extractor preserves the nested HAc FeS equilibrium question', () 
   assert.equal(question.rawCorrectAnswer, 'B');
 });
 
+test('exam runtime renders sanitized homework HTML and supports per-question feedback', () => {
+  const examJs = fs.readFileSync(path.join(__dirname, 'exam.js'), 'utf8');
+  assert.match(examJs, /function sanitizeStudyHtml/);
+  assert.match(examJs, /renderStudyHtml\(question\.questionHtml, question\.question\)/);
+  assert.match(examJs, /renderStudyHtml\(option\.html, option\.text\)/);
+  assert.match(examJs, /data-exam-check-answer/);
+  assert.match(examJs, /Submit Answer \/ 提交本题/);
+  assert.match(examJs, /Right\. \/ 正确。/);
+  assert.match(examJs, /Wrong\. \/ 错误。/);
+  assert.match(examJs, /data-exam-submit-paper/);
+});
+
 test('dashboard exposes the bilingual study flow and exam bank shell', () => {
   const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);
