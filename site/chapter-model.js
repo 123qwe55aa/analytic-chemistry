@@ -45,6 +45,31 @@
     return lookup;
   }, {});
 
+  // Curated corrections for legacy generated records whose text contains
+  // cross-topic keywords. These overrides keep the current data usable while
+  // preserving metadata-first classification for normal records.
+  var CHAPTER_OVERRIDES_BY_ID = {
+    f020: 'redox',
+    f026: 'redox',
+    f029: 'redox',
+    f031: 'redox',
+    f032: 'complexation',
+    f038: 'complexation',
+    f043: 'complexation',
+    f045: 'complexation',
+    f046: 'complexation',
+    f051: 'complexation',
+    f061: 'complexation',
+    f062: 'complexation',
+    f063: 'complexation',
+    f075: 'complexation',
+    q005: 'complexation',
+    q006: 'complexation',
+    q010: 'complexation',
+    q014: 'other',
+    q015: 'complexation'
+  };
+
   function flashcardKey(card, index) {
     return card.front + '::' + card.back + '::' + index;
   }
@@ -66,7 +91,20 @@
     ].filter(Boolean).join(' ');
   }
 
+  function overrideChapter(item) {
+    if (!item || typeof item !== 'object') {
+      return '';
+    }
+    var override = CHAPTER_OVERRIDES_BY_ID[item.id];
+    return CHAPTER_IDS[override] ? override : '';
+  }
+
   function classifyStudyItem(item) {
+    var override = overrideChapter(item);
+    if (override) {
+      return override;
+    }
+
     if (item && typeof item === 'object' && CHAPTER_IDS[item.chapter]) {
       return item.chapter;
     }
@@ -129,6 +167,7 @@
   return {
     CHAPTERS: CHAPTERS,
     CHAPTER_IDS: CHAPTER_IDS,
+    CHAPTER_OVERRIDES_BY_ID: CHAPTER_OVERRIDES_BY_ID,
     classifyStudyItem: classifyStudyItem,
     buildChapterSummaries: buildChapterSummaries
   };
