@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CHAPTER_IDS } = require('./chapter-model.js');
+const { CHAPTER_IDS, classifyStudyItem } = require('./chapter-model.js');
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(__dirname, relativePath), 'utf8'));
@@ -23,11 +23,56 @@ function assertMetadata(items, prefix) {
   });
 }
 
+function collectStrings(value, output = []) {
+  if (typeof value === 'string') {
+    output.push(value);
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => collectStrings(item, output));
+  } else if (value && typeof value === 'object') {
+    Object.values(value).forEach((item) => collectStrings(item, output));
+  }
+  return output;
+}
+
 test('all study content has stable chapter metadata', () => {
   const flashcards = readJson('data/flashcards.json').cards;
   const questions = readJson('data/quiz.json').questions;
   assertMetadata(flashcards, 'f');
   assertMetadata(questions, 'q');
+});
+
+test('quiz questions have exactly one correct answer', () => {
+  const questions = readJson('data/quiz.json').questions;
+  questions.forEach((question) => {
+    assert.equal(
+      question.answerOptions.filter((option) => option.isCorrect).length,
+      1,
+      `${question.id} should have exactly one correct option`
+    );
+  });
+});
+
+test('study content has no obvious mojibake, raw HTML, or broken TeX commands', () => {
+  const flashcards = readJson('data/flashcards.json').cards;
+  const questions = readJson('data/quiz.json').questions;
+  const strings = collectStrings({ flashcards, questions });
+  strings.forEach((text) => {
+    assert.doesNotMatch(text, /�|Ã|â€|&nbsp;/, `mojibake/entity leak: ${text}`);
+    assert.doesNotMatch(text, /<\/?[a-z][^>]*>/i, `raw HTML leak: ${text}`);
+    assert.doesNotMatch(text, /\\(?:sqrt|frac|rightleftharpoons|cdot|approx|ge|le)[A-Za-z0-9]/, `possibly broken TeX command: ${text}`);
+  });
+});
+
+test('curated chapter corrections repair known generated misclassifications', () => {
+  const flashcards = readJson('data/flashcards.json').cards;
+  const questions = readJson('data/quiz.json').questions;
+  const byId = Object.fromEntries(flashcards.concat(questions).map((item) => [item.id, item]));
+  assert.equal(classifyStudyItem(byId.f020), 'redox');
+  assert.equal(classifyStudyItem(byId.f026), 'redox');
+  assert.equal(classifyStudyItem(byId.f043), 'complexation');
+  assert.equal(classifyStudyItem(byId.f045), 'complexation');
+  assert.equal(classifyStudyItem(byId.q005), 'complexation');
+  assert.equal(classifyStudyItem(byId.q015), 'complexation');
 });
 
 test('dashboard exposes the bilingual four-step study flow', () => {
