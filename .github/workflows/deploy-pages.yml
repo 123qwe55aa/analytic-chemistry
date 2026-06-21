@@ -37,13 +37,10 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          # Whitelist — only what the site needs
           cp -r \
             index.html styles.css app.js chapter-model.js \
             data homework katex scripts assets \
             _site/
-          # Also copy site assets (worktree HTML pages)
-          cp -r site/* _site/ 2>/dev/null || true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
