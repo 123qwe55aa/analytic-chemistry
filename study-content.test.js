@@ -138,6 +138,30 @@ test('homework extractor preserves the nested HAc FeS equilibrium question', () 
   assert.equal(question.rawCorrectAnswer, 'B');
 });
 
+test('exam runtime uses KaTeX rendering and supports per-question feedback', () => {
+  const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  const examJs = fs.readFileSync(path.join(__dirname, 'exam.js'), 'utf8');
+
+  assert.match(html, /katex@0\.16\.22\/dist\/katex\.min\.css/);
+  assert.match(html, /katex@0\.16\.22\/dist\/katex\.min\.js/);
+  assert.match(html, /katex@0\.16\.22\/dist\/contrib\/auto-render\.min\.js/);
+  assert.doesNotMatch(html, /mathjax/i);
+  assert.doesNotMatch(html, /MathJax/);
+
+  assert.match(examJs, /function sanitizeStudyHtml/);
+  assert.match(examJs, /renderStudyHtml\(question\.questionHtml, question\.question\)/);
+  assert.match(examJs, /renderStudyHtml\(option\.html, option\.text\)/);
+  assert.match(examJs, /renderMathInElement/);
+  assert.match(examJs, /throwOnError: false/);
+  assert.doesNotMatch(examJs, /typesetPromise/);
+  assert.doesNotMatch(examJs, /window\.MathJax/);
+  assert.match(examJs, /data-exam-check-answer/);
+  assert.match(examJs, /Submit Answer \/ 提交本题/);
+  assert.match(examJs, /Right\. \/ 正确。/);
+  assert.match(examJs, /Wrong\. \/ 错误。/);
+  assert.match(examJs, /data-exam-submit-paper/);
+});
+
 test('dashboard exposes the bilingual study flow and exam bank shell', () => {
   const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);

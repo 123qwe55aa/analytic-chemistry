@@ -8,12 +8,27 @@
     questions: [],
     index: 0,
     answers: {},
+    checkedAnswers: {},
     submitted: false,
     score: 0,
     startedAt: 0,
     endedAt: 0,
     randomize: true,
     requestedCount: 20
+  };
+
+  var ALLOWED_STUDY_TAGS = {
+    p: true,
+    span: true,
+    sup: true,
+    sub: true,
+    em: true,
+    strong: true,
+    b: true,
+    i: true,
+    u: true,
+    br: true,
+    small: true
   };
 
   function byId(id) {
@@ -29,6 +44,28 @@
       .replace(/'/g, '&#39;');
   }
 
+  function sanitizeStudyHtml(value) {
+    return String(value || '')
+      .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<([a-z][a-z0-9]*)\b[^>]*>/gi, function (_match, tag) {
+        var normalized = tag.toLowerCase();
+        return ALLOWED_STUDY_TAGS[normalized] ? '<' + normalized + '>' : '';
+      })
+      .replace(/<\/([a-z][a-z0-9]*)>/gi, function (_match, tag) {
+        var normalized = tag.toLowerCase();
+        return ALLOWED_STUDY_TAGS[normalized] && normalized !== 'br' ? '</' + normalized + '>' : '';
+      });
+  }
+
+  function renderStudyHtml(html, fallbackText) {
+    if (html && String(html).trim()) {
+      return sanitizeStudyHtml(html);
+    }
+    return escapeHtml(fallbackText || '');
+  }
+
   function shuffle(list) {
     var copy = list.slice();
     for (var i = copy.length - 1; i > 0; i -= 1) {
@@ -41,9 +78,23 @@
   }
 
   function typeset() {
-    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-      window.MathJax.typesetPromise().catch(function () {});
+    var root = byId('examRoot');
+    if (!root) return;
+    if (typeof window.renderMathInElement !== 'function') {
+      setTimeout(function () {
+        if (typeof window.renderMathInElement === 'function') typeset();
+      }, 100);
+      return;
     }
+    window.renderMathInElement(root, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '\\[', right: '\\]', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false
+    });
   }
 
   function selectedLabels(question) {
@@ -52,15 +103,23 @@
 
   function correctLabels(question) {
     if (Array.isArray(question.correctAnswers)) {
-      return question.correctAnswers.slice().sort();
+      return question.correctAnswers.slice().filter(Boolean).sort();
     }
     if (typeof question.correctAnswer === 'string') {
       return question.correctAnswer.split(/[,，、\s]+/).filter(Boolean).sort();
     }
-    return question.answerOptions.filter(function (option) { return option.isCorrect; }).map(function (option) { return option.label; }).sort();
+    return (question.answerOptions || [])
+      .filter(function (option) { return option.isCorrect; })
+      .map(function (option) { return option.label; })
+      .sort();
+  }
+
+  function isAutoScored(question) {
+    return question.scoringMode !== 'manual' && correctLabels(question).length > 0;
   }
 
   function isCorrect(question) {
+    if (!isAutoScored(question)) return false;
     var selected = selectedLabels(question).slice().sort();
     var correct = correctLabels(question);
     return selected.length === correct.length && selected.every(function (label, index) { return label === correct[index]; });
@@ -68,13 +127,21 @@
 
   function totalScore() {
     return state.questions.reduce(function (sum, question) {
-      return sum + (Number(question.score) || 0);
+      return sum + (isAutoScored(question) ? Number(question.score) || 0 : 0);
     }, 0);
+  }
+
+  function manualQuestionCount() {
+    return state.questions.filter(function (question) { return !isAutoScored(question); }).length;
+  }
+
+  function answerDisplay(question) {
+    return correctLabels(question).join(', ') || question.rawCorrectAnswer || 'Manual review / 人工核对';
   }
 
   function persistMistakes() {
     var mistakes = state.questions.filter(function (question) {
-      return !isCorrect(question);
+      return isAutoScored(question) && !isCorrect(question);
     }).map(function (question) {
       return {
         id: question.id,
@@ -82,7 +149,7 @@
         examTitle: state.activeExam ? state.activeExam.title : '',
         question: question.question,
         selectedAnswer: selectedLabels(question).join(', ') || '(blank)',
-        correctAnswer: correctLabels(question).join(', '),
+        correctAnswer: answerDisplay(question),
         timestamp: Date.now()
       };
     });
@@ -148,6 +215,7 @@
     state.questions = questions;
     state.index = 0;
     state.answers = {};
+    state.checkedAnswers = {};
     state.submitted = false;
     state.score = 0;
     state.startedAt = Date.now();
@@ -164,21 +232,32 @@
       return;
     }
 
+    var checked = Boolean(state.checkedAnswers[question.id]);
+    var showFeedback = checked || state.submitted;
     var type = question.type === 'multiple' ? 'checkbox' : 'radio';
     var selected = selectedLabels(question);
-    var options = question.answerOptions.map(function (option) {
-      var checked = selected.includes(option.label) ? 'checked' : '';
-      return '<label class="quiz-option">' +
-        '<input type="' + type + '" name="exam-answer" value="' + escapeHtml(option.label) + '" ' + checked + (state.submitted ? ' disabled' : '') + '>' +
-        '<span>' + escapeHtml(option.label) + '. ' + escapeHtml(option.text) + '</span>' +
+    var options = (question.answerOptions || []).map(function (option) {
+      var isChecked = selected.includes(option.label) ? 'checked' : '';
+      var optionClass = 'quiz-option';
+      if (showFeedback && correctLabels(question).includes(option.label)) optionClass += ' is-correct';
+      if (showFeedback && selected.includes(option.label) && !correctLabels(question).includes(option.label)) optionClass += ' is-wrong';
+      return '<label class="' + optionClass + '">' +
+        '<input type="' + type + '" name="exam-answer" value="' + escapeHtml(option.label) + '" ' + isChecked + (state.submitted ? ' disabled' : '') + '>' +
+        '<span><strong>' + escapeHtml(option.label) + '.</strong> ' + renderStudyHtml(option.html, option.text) + '</span>' +
       '</label>';
     }).join('');
 
+    if (!options) {
+      options = '<p class="helper">This question has no extracted choices. Use the original answer for manual review. / 此题没有提取到选项，请按原答案人工核对。</p>';
+    }
+
     var feedback = '';
-    if (state.submitted) {
+    if (showFeedback) {
       feedback = '<p class="helper">' +
-        (isCorrect(question) ? 'Correct. / 正确。' : 'Wrong. / 错误。') +
-        ' Correct answer: ' + escapeHtml(correctLabels(question).join(', ')) +
+        (isAutoScored(question)
+          ? (isCorrect(question) ? 'Right. / 正确。' : 'Wrong. / 错误。')
+          : 'Manual review. / 人工核对。') +
+        ' Correct answer: ' + escapeHtml(answerDisplay(question)) +
       '</p>';
     }
 
@@ -191,13 +270,14 @@
           '</div>' +
           '<span class="result-chip">Score: ' + state.score + ' / ' + totalScore() + '</span>' +
         '</div>' +
-        '<h3>' + escapeHtml(question.question) + '</h3>' +
+        '<div class="exam-question-text">' + renderStudyHtml(question.questionHtml, question.question) + '</div>' +
         '<div class="stack">' + options + '</div>' +
         feedback +
         '<div class="actions">' +
+          '<button class="btn btn-primary" data-exam-check-answer' + (state.submitted ? ' disabled' : '') + '>Submit Answer / 提交本题</button>' +
           '<button class="btn btn-ghost" data-exam-nav="prev"' + (state.index <= 0 ? ' disabled' : '') + '>Prev / 上一题</button>' +
           '<button class="btn btn-ghost" data-exam-nav="next"' + (state.index >= state.questions.length - 1 ? ' disabled' : '') + '>Next / 下一题</button>' +
-          '<button class="btn btn-primary" data-exam-submit-paper"' + (state.submitted ? ' disabled' : '') + '>Submit Paper / 交卷</button>' +
+          '<button class="btn btn-primary" data-exam-submit-paper' + (state.submitted ? ' disabled' : '') + '>Submit Paper / 交卷</button>' +
           '<button class="btn btn-ghost" data-exam-reset>Back to Papers / 返回试卷</button>' +
         '</div>' +
       '</article>';
@@ -206,13 +286,14 @@
 
   function renderResult(root) {
     var total = totalScore();
-    var wrong = state.questions.filter(function (question) { return !isCorrect(question); });
+    var wrong = state.questions.filter(function (question) { return isAutoScored(question) && !isCorrect(question); });
+    var manualCount = manualQuestionCount();
     var usedSeconds = state.endedAt && state.startedAt ? Math.round((state.endedAt - state.startedAt) / 1000) : 0;
     var wrongHtml = wrong.length ? wrong.map(function (question) {
       return '<li><strong>' + escapeHtml(question.question) + '</strong><br>' +
         'Your answer: ' + escapeHtml(selectedLabels(question).join(', ') || '(blank)') + '<br>' +
-        'Correct: ' + escapeHtml(correctLabels(question).join(', ')) + '</li>';
-    }).join('') : '<li>No mistakes. / 没有错题。</li>';
+        'Correct: ' + escapeHtml(answerDisplay(question)) + '</li>';
+    }).join('') : '<li>No auto-scored mistakes. / 自动评分题没有错题。</li>';
 
     root.innerHTML =
       '<article class="panel">' +
@@ -221,6 +302,7 @@
           '<span class="result-chip"><span>Score</span> <strong>' + state.score + ' / ' + total + '</strong></span>' +
           '<span class="result-chip"><span>Accuracy</span> <strong>' + (total ? Math.round(state.score / total * 100) : 0) + '%</strong></span>' +
           '<span class="result-chip"><span>Wrong</span> <strong>' + wrong.length + '</strong></span>' +
+          '<span class="result-chip"><span>Manual</span> <strong>' + manualCount + '</strong></span>' +
           '<span class="result-chip"><span>Time</span> <strong>' + usedSeconds + 's</strong></span>' +
         '</div>' +
         '<h3>Wrong Questions / 错题</h3>' +
@@ -230,6 +312,13 @@
           '<button class="btn btn-ghost" data-exam-reset>Choose Another Paper / 选择其他试卷</button>' +
         '</div>' +
       '</article>';
+  }
+
+  function checkCurrentAnswer() {
+    var question = state.questions[state.index];
+    if (!question || state.submitted) return;
+    state.checkedAnswers[question.id] = true;
+    renderQuestion(byId('examRoot'));
   }
 
   function finishExam() {
@@ -267,7 +356,7 @@
   }
 
   document.addEventListener('click', function (event) {
-    var target = event.target.closest('[data-route="exam"], [data-exam-start], [data-exam-nav], [data-exam-submit-paper], [data-exam-reset], [data-exam-review]');
+    var target = event.target.closest('[data-route="exam"], [data-exam-start], [data-exam-nav], [data-exam-check-answer], [data-exam-submit-paper], [data-exam-reset], [data-exam-review]');
     if (!target) return;
 
     if (target.matches('[data-route="exam"]')) {
@@ -288,12 +377,15 @@
     } else if (nav === 'next') {
       state.index = Math.min(state.questions.length - 1, state.index + 1);
       renderExam();
+    } else if (target.hasAttribute('data-exam-check-answer')) {
+      checkCurrentAnswer();
     } else if (target.hasAttribute('data-exam-submit-paper')) {
       finishExam();
     } else if (target.hasAttribute('data-exam-reset')) {
       state.activeExam = null;
       state.questions = [];
       state.answers = {};
+      state.checkedAnswers = {};
       state.submitted = false;
       renderExam();
     } else if (target.hasAttribute('data-exam-review')) {
@@ -308,6 +400,10 @@
     if (!question || state.submitted) return;
     var inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="exam-answer"]:checked'));
     state.answers[question.id] = inputs.map(function (input) { return input.value; });
+    if (state.checkedAnswers[question.id]) {
+      state.checkedAnswers[question.id] = false;
+      renderQuestion(byId('examRoot'));
+    }
   });
 
   if (document.readyState === 'loading') {
