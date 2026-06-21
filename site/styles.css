@@ -308,3 +308,46 @@ h2, h3 { margin: 0 0 0.65rem; }
   .chapter-tile, .chapter-tile:nth-child(even), .ref-item:nth-child(even) { padding-left: 0; border-left: 0; }
   .chapter-tile { min-height: 0; padding-right: 0; }
 }
+
+/* Courseware & Homework views */
+.ref-courseware {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 1.25rem 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  border-bottom: 1px solid var(--border);
+}
+.ref-courseware:hover {
+  background: var(--surface-raised);
+}
+.ref-label { display: block; font-size: 1rem; font-weight: 600; }
+.ref-meta { display: block; font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+.ref-actions { display: block; font-size: 0.85rem; color: var(--accent); margin-top: 0.25rem; }
+.ref-subhead { margin: 1.5rem 0 0.5rem; font-size: 1.1rem; }
+.ref-grid-inner { display: flex; flex-direction: column; gap: 0; }
+
+.breadcrumb { margin-bottom: 1rem; }
+.breadcrumb .btn-text { color: var(--accent); padding: 0; }
+
+.courseware-head { margin-bottom: 1.5rem; }
+.courseware-head h2 { margin: 0 0 0.25rem; }
+.courseware-head .helper { margin: 0; }
+
+.homework-list { list-style: none; padding: 0; margin: 0; }
+.homework-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.homework-item:last-child { border-bottom: none; }
+.homework-head { display: flex; justify-content: space-between; align-items: center; }
+.stat-list { list-style: none; padding: 0; margin: 0; }
+.stat-list li {
+  display: flex; justify-content: space-between;
+  padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+}
+.stat-list li:last-child { border-bottom: none; }

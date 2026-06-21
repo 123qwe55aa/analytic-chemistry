@@ -13,6 +13,33 @@
   var EXAM_START = new Date(2026, 5, 23, 13, 0, 0);
   var EXAM_END = new Date(2026, 5, 23, 14, 30, 0);
   var countdownTimer = null;
+  var selectedCoursewareId = '';
+
+  var COURSEWARE_LIST = [
+    { id: 'cw-01', label: '溶解平衡与沉淀 13:05', topic: 'Solubility & Ksp',    chapterId: 'solubility',     date: '2026-04-07', file: '课件_20260407_130520.pdf' },
+    { id: 'cw-02', label: '溶解平衡与沉淀 13:09', topic: 'Solubility & Ksp',    chapterId: 'solubility',     date: '2026-04-07', file: '课件_20260407_130910.pdf' },
+    { id: 'cw-03', label: '溶解平衡与沉淀 13:10', topic: 'Solubility & Ksp',    chapterId: 'solubility',     date: '2026-04-07', file: '课件_20260407_131044.pdf' },
+    { id: 'cw-04', label: '溶解平衡与沉淀 13:13', topic: 'Solubility & Ksp',    chapterId: 'solubility',     date: '2026-04-07', file: '课件_20260407_131311.pdf' },
+    { id: 'cw-05', label: '氧化还原滴定 13:13',   topic: 'Redox Titration',    chapterId: 'redox',          date: '2026-04-07', file: '课件_20260407_131355.pdf' },
+    { id: 'cw-06', label: '氧化还原滴定 13:14',   topic: 'Redox Titration',    chapterId: 'redox',          date: '2026-04-07', file: '课件_20260407_131456.pdf' },
+    { id: 'cw-07', label: '氧化还原滴定 13:15',   topic: 'Redox Titration',    chapterId: 'redox',          date: '2026-04-07', file: '课件_20260407_131555.pdf' },
+    { id: 'cw-08', label: '氧化还原滴定 13:16',   topic: 'Redox Titration',    chapterId: 'redox',          date: '2026-04-07', file: '课件_20260407_131638.pdf' },
+    { id: 'cw-09', label: '配位与络合滴定 13:18',  topic: 'Complexation & EDTA', chapterId: 'complexation',   date: '2026-04-07', file: '课件_20260407_131844.pdf' },
+    { id: 'cw-10', label: '配位与络合滴定 13:22',  topic: 'Complexation & EDTA', chapterId: 'complexation',   date: '2026-04-07', file: '课件_20260407_132201.pdf' },
+    { id: 'cw-11', label: '配位与络合滴定 13:22',  topic: 'Complexation & EDTA', chapterId: 'complexation',   date: '2026-04-07', file: '课件_20260407_132250.pdf' },
+    { id: 'cw-12', label: '配位与络合滴定 13:23',  topic: 'Complexation & EDTA', chapterId: 'complexation',   date: '2026-04-07', file: '课件_20260407_132334.pdf' },
+    { id: 'cw-13', label: '酸碱平衡与滴定 13:24',  topic: 'Acid-Base / Titration', chapterId: 'acid-base',  date: '2026-04-07', file: '课件_20260407_132414.pdf' },
+    { id: 'cw-14', label: '酸碱平衡与滴定 13:25',  topic: 'Acid-Base / Titration', chapterId: 'acid-base',  date: '2026-04-07', file: '课件_20260407_132539.pdf' },
+    { id: 'cw-15', label: '酸碱平衡与滴定 13:26',  topic: 'Acid-Base / Titration', chapterId: 'acid-base',  date: '2026-04-07', file: '课件_20260407_132631.pdf' },
+    { id: 'cw-16', label: '酸碱平衡与滴定 13:26',  topic: 'Acid-Base / Titration', chapterId: 'acid-base',  date: '2026-04-07', file: '课件_20260407_132657.pdf' },
+    { id: 'cw-17', label: '仪器分析与综合复习 13:27', topic: 'Instrumental / Other', chapterId: 'other', date: '2026-04-07', file: '课件_20260407_132722.pdf' },
+    { id: 'cw-18', label: '仪器分析与综合复习 13:28', topic: 'Instrumental / Other', chapterId: 'other', date: '2026-04-07', file: '课件_20260407_132815.pdf' },
+    { id: 'cw-19', label: '仪器分析与综合复习 13:28', topic: 'Instrumental / Other', chapterId: 'other', date: '2026-04-07', file: '课件_20260407_132843.pdf' },
+    { id: 'cw-20', label: '仪器分析与综合复习 13:29', topic: 'Instrumental / Other', chapterId: 'other', date: '2026-04-07', file: '课件_20260407_132911.pdf' },
+    { id: 'cw-21', label: '仪器分析与综合复习 13:29', topic: 'Instrumental / Other', chapterId: 'other', date: '2026-04-07', file: '课件_20260407_132933.pdf' }
+  ];
+
+  var HOMEWORK_ITEMS = [];
 
   var state = {
     loading: true,
@@ -445,6 +472,109 @@
     setText('#errorMessage, [data-bind="error-message"]', state.loadError || '');
   }
 
+  function renderReferences() {
+    var grid = byId('coursewareGrid');
+    if (!grid) { return; }
+    var extras = [
+      { label: 'Concept Map Image', href: 'assets/Mastering%20Analytical%20Equilibria%20Principles.png', type: 'image' },
+      { label: 'Audio Review Podcast', href: 'assets/podcast_analytic_chemistry.mp3', type: 'audio' },
+      { label: 'Analytical Equilibrium Blueprint', href: './Analytical%20Equilibrium%20Blueprint.pdf', type: 'pdf' }
+    ];
+    var extraHtml = extras.map(function (e) {
+      return '<a class=\"ref-item\" href=\"' + e.href + '\" target=\"_blank\" rel=\"noopener\">' + e.label + '</a>';
+    }).join('');
+    var coursewareHtml = COURSEWARE_LIST.map(function (cw) {
+      return '<button class=\"ref-item ref-courseware\" data-courseware-id=\"' + cw.id + '\">' +
+        '<span class=\"ref-label\">' + cw.label + '</span>' +
+        '<span class=\"ref-meta\">' + cw.topic + '</span>' +
+        '<span class=\"ref-actions\">查看详情 &rarr;</span>' +
+        '</button>';
+    }).join('');
+    grid.innerHTML = '<div class=\"ref-grid-inner\">' + extraHtml + '</div>' +
+      '<h3 class=\"ref-subhead\">Lecture Courseware / 课件</h3>' +
+      '<div class=\"ref-grid-inner\">' + coursewareHtml + '</div>';
+  }
+
+  function getCourseware(id) {
+    return COURSEWARE_LIST.filter(function (c) { return c.id === id; })[0] || null;
+  }
+
+  function renderCoursewareDetail() {
+    var cw = getCourseware(selectedCoursewareId);
+    var detail = byId('coursewareDetail');
+    if (!cw) {
+      detail.innerHTML = '<p class=\"helper\">Courseware not found.</p>';
+      return;
+    }
+    var chapterSummary = getChapterSummaries().filter(function (s) { return s.id === cw.chapterId; })[0];
+    var relatedCards = chapterSummary ? chapterSummary.flashcardTotal : 0;
+    var relatedQuiz = chapterSummary ? chapterSummary.quizTotal : 0;
+    var homeworkHtml = HOMEWORK_ITEMS.length
+      ? '<ul class=\"homework-list\">' + HOMEWORK_ITEMS.map(function (h) {
+          return '<li class=\"homework-item\">' +
+            '<strong>' + h.title + '</strong>' +
+            '<p class=\"helper\">' + (h.description || '') + '</p>' +
+            (h.link ? '<a class=\"btn btn-small btn-ghost\" href=\"' + h.link + '\" target=\"_blank\">Open / 打开</a>' : '') +
+            '</li>';
+        }).join('') + '</ul>'
+      : '<p class=\"helper\">No homework posted yet. / 暂无作业</p>';
+
+    detail.innerHTML =
+      '<div class=\"courseware-head\">' +
+        '<h2>' + cw.label + '</h2>' +
+        '<p class=\"helper\">' + cw.topic + ' &middot; ' + cw.date + '</p>' +
+      '</div>' +
+      '<div class=\"split-grid\">' +
+        '<article class=\"panel\">' +
+          '<h3>Courseware Details / 课件信息</h3>' +
+          '<ul class=\"stat-list\">' +
+            '<li><span>Chapter</span><strong>' + cw.topic + '</strong></li>' +
+            '<li><span>Date</span><strong>' + cw.date + '</strong></li>' +
+            '<li><span>Related Flashcards</span><strong>' + relatedCards + '</strong></li>' +
+            '<li><span>Related Quiz</span><strong>' + relatedQuiz + '</strong></li>' +
+          '</ul>' +
+          '<div class=\"actions\">' +
+            '<a class=\"btn btn-primary\" href=\"./' + cw.file + '\" target=\"_blank\" rel=\"noopener\">Open PDF / 打开课件</a>' +
+          '</div>' +
+        '</article>' +
+        '<article class=\"panel\">' +
+          '<h3>Homework / 作业详情</h3>' +
+          homeworkHtml +
+          '<div class=\"actions\">' +
+            '<button class=\"btn btn-ghost\" data-action=\"homework-edit\">Add Homework / 添加作业</button>' +
+          '</div>' +
+        '</article>' +
+      '</div>';
+  }
+
+  function renderHomework() {
+    var detail = byId('homeworkDetail');
+    var cw = getCourseware(selectedCoursewareId);
+    if (!cw) {
+      detail.innerHTML = '<p class=\"helper\">No courseware selected.</p>';
+      return;
+    }
+    if (!HOMEWORK_ITEMS.length) {
+      detail.innerHTML =
+        '<h2>Homework for ' + cw.label + '</h2>' +
+        '<p class=\"helper\">No homework assigned yet. Use "Add Homework" to create entries.</p>';
+      return;
+    }
+    detail.innerHTML =
+      '<h2>Homework / 作业详情</h2>' +
+      '<p class=\"helper\">' + cw.label + '</p>' +
+      '<ul class=\"homework-list\">' + HOMEWORK_ITEMS.map(function (h, i) {
+        return '<li class=\"homework-item\">' +
+          '<div class=\"homework-head\">' +
+            '<strong>' + h.title + '</strong>' +
+            '<span class=\"card-tag\">' + (h.status || 'pending') + '</span>' +
+          '</div>' +
+          '<p class=\"helper\">' + (h.description || '') + '</p>' +
+          (h.dueDate ? '<p class=\"helper\">Due: ' + h.dueDate + '</p>' : '') +
+          '</li>';
+      }).join('') + '</ul>';
+  }
+
   function switchView(view) {
     state.activeView = view;
     var panels = queryAll('[data-view]');
@@ -472,6 +602,12 @@
       renderCram();
     } else if (view === 'chapter') {
       renderChapterWorkspace();
+    } else if (view === 'references') {
+      renderReferences();
+    } else if (view === 'courseware') {
+      renderCoursewareDetail();
+    } else if (view === 'homework') {
+      renderHomework();
     }
   }
 
@@ -889,7 +1025,7 @@
 
   function bindEvents() {
     document.addEventListener('click', function (event) {
-      var target = event.target.closest('[data-route], [data-action], [data-chapter-id], [data-chapter-mode], [data-chapter-cram]');
+      var target = event.target.closest('[data-route], [data-action], [data-chapter-id], [data-chapter-mode], [data-chapter-cram], [data-courseware-id]');
       if (!target) {
         return;
       }
@@ -913,6 +1049,13 @@
       if (chapterCram) {
         state.selectedChapterId = chapterCram;
         startChapterCram(getSelectedChapterSummary());
+        return;
+      }
+
+      var coursewareId = target.getAttribute('data-courseware-id');
+      if (coursewareId) {
+        selectedCoursewareId = coursewareId;
+        switchView('courseware');
         return;
       }
 
@@ -981,6 +1124,12 @@
         submitCramQuiz();
       } else if (action === 'cram-rate') {
         rateCramFlashcard(target.getAttribute('data-value'));
+      } else if (action === 'homework-edit') {
+        var title = prompt('Homework title / 作业标题:');
+        if (title && title.trim()) {
+          HOMEWORK_ITEMS.push({ title: title.trim(), description: '', status: 'pending', dueDate: '' });
+          renderCoursewareDetail();
+        }
       } else if (action === 'goal-add') {
         ensureDailyGoalDate();
         state.dailyGoal.completed += 1;
