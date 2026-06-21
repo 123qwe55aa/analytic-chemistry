@@ -124,10 +124,11 @@ test('homework extractor preserves the nested HAc FeS equilibrium question', () 
   const question = homeworkExam.questions.find((item) => item.question.includes('HAc') && item.question.includes('FeS'));
   assert.ok(question, 'expected HAc/FeS equilibrium question to be extracted');
 
-  assert.match(question.question, /K_a1/);
-  assert.match(question.question, /K_a2/);
-  assert.match(question.question, /K_sp.*FeS/);
-  assert.match(question.question, /HAc/);
+  const compactQuestion = question.question.replace(/\s+/g, '');
+  assert.match(compactQuestion, /K_a1/);
+  assert.match(compactQuestion, /K_a2/);
+  assert.match(compactQuestion, /K_sp.*FeS/);
+  assert.match(compactQuestion, /HAc/);
 
   assert.deepEqual(question.answerOptions.map((option) => option.label), ['A', 'B', 'C', 'D']);
   assert.ok(question.answerOptions.every((option) => typeof option.originalText === 'string' && option.originalText.length > 0));
