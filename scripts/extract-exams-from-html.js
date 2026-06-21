@@ -47,6 +47,7 @@ function htmlToText(html) {
       .replace(/<sup[^>]*>([\s\S]*?)<\/sup>/gi, '^$1')
       .replace(/<sub[^>]*>([\s\S]*?)<\/sub>/gi, '_$1')
       .replace(/<br\s*\/?\s*>/gi, ' ')
+      .replace(/<\/p>/gi, ' ')
       .replace(/<[^>]+>/g, ' ')
   );
 }
@@ -64,6 +65,32 @@ function firstRawMatch(html, re, fallback = '') {
 
 function firstTextMatch(html, re, fallback = '') {
   return htmlToText(firstRawMatch(html, re, fallback));
+}
+
+function sliceAfterOpeningTag(html, openTagRe, closeTagRe) {
+  const open = openTagRe.exec(html);
+  if (!open) return '';
+  const start = open.index + open[0].length;
+  const rest = html.slice(start);
+  const close = closeTagRe.exec(rest);
+  return close ? rest.slice(0, close.index) : rest;
+}
+
+function extractQuestionHtml(block) {
+  const html = sliceAfterOpeningTag(
+    block,
+    /<span[^>]*class="[^"]*\bqtContent\b[^"]*"[^>]*>/i,
+    /<\/h3>/i
+  );
+  return html.replace(/<\/span>\s*$/i, '').trim();
+}
+
+function extractOptionsHtml(block) {
+  return sliceAfterOpeningTag(
+    block,
+    /<ul[^>]*class="[^"]*\bqtDetail\b[^"]*"[^>]*>/i,
+    /<\/ul>/i
+  );
 }
 
 function parseSummary(html) {
@@ -100,6 +127,13 @@ function optionFromLi(liHtml) {
   };
 }
 
+function extractOptions(block) {
+  const optionsHtml = extractOptionsHtml(block);
+  return [...optionsHtml.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
+    .map((match) => optionFromLi(match[1]))
+    .filter(Boolean);
+}
+
 function inferType(block) {
   const typeLabel = firstTextMatch(block, /<span[^>]*class="[^"]*colorShallow[^"]*"[^>]*>\s*（?\(?([^<)）]+)[)）]?\s*<\/span>/i, '单选题');
   if (/多选/.test(typeLabel)) return { type: 'multiple', label: typeLabel };
@@ -120,13 +154,11 @@ function normalizeCorrectAnswers(correctRaw, options) {
 }
 
 function extractQuestion(block, examId, number, score) {
-  const questionHtml = firstRawMatch(block, /<span[^>]*class="[^"]*qtContent[^"]*"[^>]*>([\s\S]*?)<\/span>/i);
+  const questionHtml = extractQuestionHtml(block);
   const question = htmlToText(questionHtml);
   if (!question) return null;
 
-  const optionMatches = [...block.matchAll(/<li[^>]*class="[^"]*workTextWrap[^"]*"[^>]*>([\s\S]*?)<\/li>/gi)];
-  const options = optionMatches.map((match) => optionFromLi(match[1])).filter(Boolean);
-
+  const options = extractOptions(block);
   const correctRaw = firstRawMatch(block, /<span[^>]*class="[^"]*rightAnswerContent[^"]*"[^>]*>([\s\S]*?)<\/span>/i);
   const rawCorrectAnswer = htmlToText(correctRaw);
   const correctAnswers = normalizeCorrectAnswers(correctRaw, options);
