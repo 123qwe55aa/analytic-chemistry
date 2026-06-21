@@ -71,8 +71,8 @@ function parseSummary(html) {
   const title = htmlToText(titleHtml) || 'HTML Exam';
   const questionCount = Number(firstTextMatch(html, /题量:\s*(?:<\/span>\s*<span[^>]*>)?(\d+)/i)) || 0;
   const totalScore = Number(firstTextMatch(html, /满分:\s*(?:<\/span>\s*<span[^>]*>)?(\d+)/i)) || 0;
-  const availableTime = firstTextMatch(html, /作答时间:\s*<em>([\s\S]*?)<\/em>\s*至\s*<em>([\s\S]*?)<\/em>/i);
-  return { title, titleHtml: normalizeHtmlFragment(titleHtml), questionCount, totalScore, availableTime };
+  const availableTimeStart = firstTextMatch(html, /作答时间:\s*<em>([\s\S]*?)<\/em>/i);
+  return { title, titleHtml: normalizeHtmlFragment(titleHtml), questionCount, totalScore, availableTime: availableTimeStart };
 }
 
 function questionBlocks(html) {
@@ -128,9 +128,11 @@ function extractQuestion(block, examId, number, score) {
   const options = optionMatches.map((match) => optionFromLi(match[1])).filter(Boolean);
 
   const correctRaw = firstRawMatch(block, /<span[^>]*class="[^"]*rightAnswerContent[^"]*"[^>]*>([\s\S]*?)<\/span>/i);
+  const rawCorrectAnswer = htmlToText(correctRaw);
   const correctAnswers = normalizeCorrectAnswers(correctRaw, options);
   const inferred = inferType(block);
   const normalizedType = inferred.type === 'multiple' ? 'multiple' : options.length ? 'single' : inferred.type;
+  const scoringMode = options.length && correctAnswers.length ? 'auto' : 'manual';
   const answerOptions = options.map((option) => ({
     ...option,
     isCorrect: correctAnswers.includes(option.label)
@@ -142,11 +144,13 @@ function extractQuestion(block, examId, number, score) {
     number,
     type: normalizedType,
     typeLabel: inferred.label,
-    score,
+    scoringMode,
+    score: scoringMode === 'auto' ? score : 0,
+    originalScore: score,
     question,
     questionHtml: normalizeHtmlFragment(questionHtml),
     answerOptions,
-    rawCorrectAnswer: htmlToText(correctRaw),
+    rawCorrectAnswer,
     correctAnswer: correctAnswers.join(','),
     correctAnswers,
     originalText: htmlToText(block),
@@ -168,12 +172,15 @@ function extractExam(file, index) {
     .map((block, questionIndex) => extractQuestion(block, examId, questionIndex + 1, perQuestionScore))
     .filter(Boolean);
 
+  const autoScoreTotal = questions.reduce((sum, question) => sum + (Number(question.score) || 0), 0);
+
   return {
     id: examId,
     source: path.relative(ROOT, file),
     title: summary.title,
     titleHtml: summary.titleHtml,
-    totalScore: summary.totalScore || Number((questions.length * perQuestionScore).toFixed(2)),
+    totalScore: autoScoreTotal || summary.totalScore || Number((questions.length * perQuestionScore).toFixed(2)),
+    declaredTotalScore: summary.totalScore,
     declaredQuestionCount: summary.questionCount,
     questionCount: questions.length,
     availableTime: summary.availableTime,
