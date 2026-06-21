@@ -45,6 +45,7 @@
         <button class="tab" data-route="cram">Cram / 冲刺</button>
         <button class="tab" data-route="flashcards">Flashcards / 卡片记忆</button>
         <button class="tab" data-route="quiz">Quiz / 测验</button>
+        <button class="tab" data-route="exam">Exam / 考试</button>
         <button class="tab" data-route="mistakes">Mistakes / 错题本</button>
         <button class="tab" data-route="references">References / 课件资料</button>
       </nav>
@@ -55,7 +56,7 @@
             <div class="hero-copy">
               <p class="brand-kicker">Final Exam · June 23 · 13:00–14:30</p>
               <h2 id="dashboard-heading">Make every study session count.</h2>
-              <p class="hero-deck">A focused field guide for analytical chemistry: review one chapter, test your recall, then return to the ideas that need another pass.</p>
+              <p class="hero-deck">Review one chapter, test recall, then loop back through weak spots.</p>
               <div class="actions">
                 <button class="btn btn-primary" data-action="start-cram">Start Global Cram / 开始全局冲刺</button>
                 <button class="btn btn-ghost" data-route="mistakes">Review Mistakes / 回顾错题</button>
@@ -65,10 +66,7 @@
               <p class="countdown-label">Time until the exam</p>
               <strong id="examCountdown" class="countdown-value">Loading...</strong>
               <p id="examCountdownNote" class="countdown-note">June 23, 13:00–14:30</p>
-              <div class="goal-block">
-                <span>Today's practice</span>
-                <strong id="dailyGoalProgress">0 / 30</strong>
-              </div>
+              <div class="goal-block"><span>Today's practice</span><strong id="dailyGoalProgress">0 / 30</strong></div>
               <div class="actions compact-actions">
                 <button class="btn btn-small btn-ghost" data-action="goal-add">+1 done</button>
                 <button class="btn btn-small btn-text" data-action="goal-reset">Reset</button>
@@ -83,40 +81,14 @@
               <p>Follow the sequence once, then repeat from your weak spots. / 完成一轮后，从薄弱点继续循环。</p>
             </div>
             <ol class="guide-steps">
-              <li class="guide-step">
-                <span class="guide-number">01</span>
-                <button class="guide-link" data-action="guide-chapter-overview">
-                  <strong>Read Chapter Notes</strong><span>阅读章节笔记</span>
-                </button>
-              </li>
-              <li class="guide-step">
-                <span class="guide-number">02</span>
-                <button class="guide-link" data-action="guide-chapter-quiz">
-                  <strong>Do Chapter Quiz</strong><span>完成章节测验</span>
-                </button>
-              </li>
-              <li class="guide-step">
-                <span class="guide-number">03</span>
-                <button class="guide-link" data-route="mistakes">
-                  <strong>Review Mistakes</strong><span>回顾错题</span>
-                </button>
-              </li>
-              <li class="guide-step">
-                <span class="guide-number">04</span>
-                <button class="guide-link" data-action="start-cram">
-                  <strong>Run Global Cram</strong><span>全局冲刺复习</span>
-                </button>
-              </li>
+              <li class="guide-step"><span class="guide-number">01</span><button class="guide-link" data-action="guide-chapter-overview"><strong>Read Chapter Notes</strong><span>阅读章节笔记</span></button></li>
+              <li class="guide-step"><span class="guide-number">02</span><button class="guide-link" data-action="guide-chapter-quiz"><strong>Do Chapter Quiz</strong><span>完成章节测验</span></button></li>
+              <li class="guide-step"><span class="guide-number">03</span><button class="guide-link" data-route="mistakes"><strong>Review Mistakes</strong><span>回顾错题</span></button></li>
+              <li class="guide-step"><span class="guide-number">04</span><button class="guide-link" data-action="start-cram"><strong>Run Global Cram</strong><span>全局冲刺复习</span></button></li>
             </ol>
           </section>
 
-          <div class="section-heading">
-            <div>
-              <p class="brand-kicker">Study by chapter</p>
-              <h2>Today's reading list</h2>
-            </div>
-            <p>Start broad, then follow the weak spots.</p>
-          </div>
+          <div class="section-heading"><div><p class="brand-kicker">Study by chapter</p><h2>Today's reading list</h2></div><p>Start broad, then follow the weak spots.</p></div>
           <section class="chapter-grid" id="chapterGrid" aria-label="Chemistry chapters"></section>
         </section>
 
@@ -124,149 +96,52 @@
           <article class="panel">
             <h2>Cram Session / 冲刺训练</h2>
             <p class="helper">Mixed sequence for rapid exam recall.</p>
-            <div class="quiz-row">
-              <div class="result-chip">Progress: <strong id="cramProgress">0 / 0</strong></div>
-              <div class="result-chip">Type: <strong id="cramType">Ready</strong></div>
-              <div class="result-chip">Quiz Score: <strong id="cramScore">0</strong></div>
-            </div>
-            <div class="card-stage">
-              <h3 id="cramPrompt">Start a cram session from Dashboard.</h3>
-              <div id="cramOptions" class="stack"></div>
-              <div class="actions">
-                <button id="cramSubmit" class="btn btn-primary" data-action="cram-submit">Submit Quiz Answer</button>
-                <button class="btn btn-ghost" data-action="start-cram">Restart Session</button>
-              </div>
-            </div>
+            <div class="quiz-row"><div class="result-chip">Progress: <strong id="cramProgress">0 / 0</strong></div><div class="result-chip">Type: <strong id="cramType">Ready</strong></div><div class="result-chip">Quiz Score: <strong id="cramScore">0</strong></div></div>
+            <div class="card-stage"><h3 id="cramPrompt">Start a cram session from Dashboard.</h3><div id="cramOptions" class="stack"></div><div class="actions"><button id="cramSubmit" class="btn btn-primary" data-action="cram-submit">Submit Quiz Answer</button><button class="btn btn-ghost" data-action="start-cram">Restart Session</button></div></div>
           </article>
         </section>
 
         <section id="view-flashcards" class="view" data-view="flashcards" hidden>
           <article class="panel">
             <h2>Flashcards / 卡片记忆</h2>
-            <p class="helper">
-              <span data-bind="flashcard-title" id="flashcardsTitle">Flashcards</span>
-              <span class="card-tag" id="flashcardPosition">0 / 0</span>
-            </p>
-
-            <div class="card-stage">
-              <div id="flashcardFrontFace" data-face="front">
-                <h3 id="flashcardFront" data-bind="flashcard-front">Loading front...</h3>
-              </div>
-              <div id="flashcardBackFace" data-face="back" hidden>
-                <h3 id="flashcardBack" data-bind="flashcard-back">Loading back...</h3>
-              </div>
-              <p id="flashcardStatus" data-bind="flashcard-status">Status: unseen</p>
-            </div>
-
-            <div class="actions">
-              <button id="flashcardFlip" class="btn btn-primary" data-action="flashcard-flip">Flip</button>
-              <button id="flashcardPrev" class="btn btn-ghost" data-action="flashcard-prev">Prev</button>
-              <button id="flashcardNext" class="btn btn-ghost" data-action="flashcard-next">Next</button>
-              <button class="btn btn-ghost" data-action="flashcard-shuffle">Shuffle</button>
-            </div>
-
-            <div class="actions">
-              <button class="btn btn-primary" data-action="flashcard-known">Known</button>
-              <button class="btn btn-ghost" data-action="flashcard-unsure">Unsure</button>
-              <button class="btn btn-ghost" data-action="flashcard-missed">Missed</button>
-            </div>
+            <p class="helper"><span data-bind="flashcard-title" id="flashcardsTitle">Flashcards</span> <span class="card-tag" id="flashcardPosition">0 / 0</span></p>
+            <div class="card-stage"><div id="flashcardFrontFace" data-face="front"><h3 id="flashcardFront" data-bind="flashcard-front">Loading front...</h3></div><div id="flashcardBackFace" data-face="back" hidden><h3 id="flashcardBack" data-bind="flashcard-back">Loading back...</h3></div><p id="flashcardStatus" data-bind="flashcard-status">Status: unseen</p></div>
+            <div class="actions"><button id="flashcardFlip" class="btn btn-primary" data-action="flashcard-flip">Flip</button><button id="flashcardPrev" class="btn btn-ghost" data-action="flashcard-prev">Prev</button><button id="flashcardNext" class="btn btn-ghost" data-action="flashcard-next">Next</button><button class="btn btn-ghost" data-action="flashcard-shuffle">Shuffle</button></div>
+            <div class="actions"><button class="btn btn-primary" data-action="flashcard-known">Known</button><button class="btn btn-ghost" data-action="flashcard-unsure">Unsure</button><button class="btn btn-ghost" data-action="flashcard-missed">Missed</button></div>
           </article>
         </section>
 
         <section id="view-quiz" class="view" data-view="quiz" hidden>
           <article class="panel">
             <h2>Quiz Practice / 测验练习</h2>
-            <p class="helper">
-              <span data-bind="quiz-title" id="quizTitle">Quiz</span>
-              <span class="card-tag" id="quizPosition">0 / 0</span>
-            </p>
+            <p class="helper"><span data-bind="quiz-title" id="quizTitle">Quiz</span> <span class="card-tag" id="quizPosition">0 / 0</span></p>
             <h3 id="quizQuestion" data-bind="quiz-question">Loading question...</h3>
-
-            <div id="quizOptions" data-bind="quiz-options" class="stack"></div>
-            <p id="quizHint" data-bind="quiz-hint" class="helper" hidden></p>
-            <p id="quizFeedback" data-bind="quiz-feedback" class="helper" hidden></p>
-
-            <div class="quiz-row">
-              <div class="result-chip">Score: <strong id="quizScore">0</strong></div>
-            </div>
-
-            <div class="actions">
-              <button id="quizSubmit" class="btn btn-primary" data-action="quiz-submit">Submit</button>
-              <button class="btn btn-ghost" data-action="quiz-toggle-hint">Hint</button>
-              <button id="quizPrev" class="btn btn-ghost" data-action="quiz-prev">Prev</button>
-              <button id="quizNext" class="btn btn-ghost" data-action="quiz-next">Next</button>
-            </div>
+            <div id="quizOptions" data-bind="quiz-options" class="stack"></div><p id="quizHint" data-bind="quiz-hint" class="helper" hidden></p><p id="quizFeedback" data-bind="quiz-feedback" class="helper" hidden></p>
+            <div class="quiz-row"><div class="result-chip">Score: <strong id="quizScore">0</strong></div></div>
+            <div class="actions"><button id="quizSubmit" class="btn btn-primary" data-action="quiz-submit">Submit</button><button class="btn btn-ghost" data-action="quiz-toggle-hint">Hint</button><button id="quizPrev" class="btn btn-ghost" data-action="quiz-prev">Prev</button><button id="quizNext" class="btn btn-ghost" data-action="quiz-next">Next</button></div>
           </article>
+        </section>
+
+        <section id="view-exam" class="view" data-view="exam" hidden>
+          <article class="panel"><h2>Exam Bank / 考试题库</h2><p class="helper">Choose a paper, build a practice set, submit it, and get an automatic score report. / 选择试卷、组卷、交卷并自动评分。</p><div id="examRoot" class="stack"></div></article>
         </section>
 
         <section id="view-mistakes" class="view" data-view="mistakes" hidden>
-          <article class="panel">
-            <h2>Mistakes Loop / 错题回炉</h2>
-            <p class="helper">Clean up weak cards and missed questions before the exam.</p>
-
-            <h3>Weak Flashcards</h3>
-            <ul id="mistakesWeakList" data-bind="mistakes-weak" class="mistake-list"></ul>
-            <button id="clearWeakCards" class="btn btn-ghost" data-action="clear-weak-cards">Clear Weak Flashcards</button>
-
-            <h3>Missed Quiz Questions</h3>
-            <ul id="mistakesQuizList" data-bind="mistakes-quiz" class="mistake-list"></ul>
-            <button id="clearMissedQuestions" class="btn btn-ghost" data-action="clear-missed-questions">Clear Missed Questions</button>
-
-            <h3>Topic Hotspots</h3>
-            <ul id="mistakesTopicList" data-bind="mistakes-topics" class="mistake-list"></ul>
-          </article>
+          <article class="panel"><h2>Mistakes Loop / 错题回炉</h2><p class="helper">Clean up weak cards and missed questions before the exam.</p><h3>Weak Flashcards</h3><ul id="mistakesWeakList" data-bind="mistakes-weak" class="mistake-list"></ul><button id="clearWeakCards" class="btn btn-ghost" data-action="clear-weak-cards">Clear Weak Flashcards</button><h3>Missed Quiz Questions</h3><ul id="mistakesQuizList" data-bind="mistakes-quiz" class="mistake-list"></ul><button id="clearMissedQuestions" class="btn btn-ghost" data-action="clear-missed-questions">Clear Missed Questions</button><h3>Topic Hotspots</h3><ul id="mistakesTopicList" data-bind="mistakes-topics" class="mistake-list"></ul></article>
         </section>
 
         <section id="view-chapter" class="view" data-view="chapter" hidden>
-          <article class="chapter-workspace">
-            <div class="chapter-head">
-              <div>
-                <p class="brand-kicker">Focused Chapter</p>
-                <h2 id="chapterTitle">Chapter</h2>
-                <p class="helper" id="chapterCue"></p>
-              </div>
-              <div class="chapter-metrics" id="chapterMetrics"></div>
-            </div>
-            <div class="mode-tabs" aria-label="Chapter tools">
-              <button class="mode-tab is-active" data-chapter-mode="overview">Overview / 概览</button>
-              <button class="mode-tab" data-chapter-mode="flashcards">Flashcards / 卡片记忆</button>
-              <button class="mode-tab" data-chapter-mode="quiz">Quiz / 测验</button>
-              <button class="mode-tab" data-chapter-mode="cram">Cram / 冲刺</button>
-              <button class="mode-tab" data-chapter-mode="mistakes">Mistakes / 错题本</button>
-            </div>
-            <div id="chapterPanel" class="chapter-panel"></div>
-          </article>
+          <article class="chapter-workspace"><div class="chapter-head"><div><p class="brand-kicker">Focused Chapter</p><h2 id="chapterTitle">Chapter</h2><p class="helper" id="chapterCue"></p></div><div class="chapter-metrics" id="chapterMetrics"></div></div><div class="mode-tabs" aria-label="Chapter tools"><button class="mode-tab is-active" data-chapter-mode="overview">Overview / 概览</button><button class="mode-tab" data-chapter-mode="flashcards">Flashcards / 卡片记忆</button><button class="mode-tab" data-chapter-mode="quiz">Quiz / 测验</button><button class="mode-tab" data-chapter-mode="cram">Cram / 冲刺</button><button class="mode-tab" data-chapter-mode="mistakes">Mistakes / 错题本</button></div><div id="chapterPanel" class="chapter-panel"></div></article>
         </section>
 
-        <section id="view-references" class="view" data-view="references" hidden>
-          <article class="panel">
-            <h2>References / 课件资料</h2>
-            <p class="helper">Deep review materials in one place. Click any item for details and homework.</p>
-            <div class="ref-grid" id="coursewareGrid"></div>
-          </article>
-        </section>
-
-        <section id="view-courseware" class="view" data-view="courseware" hidden>
-          <article class="panel">
-            <nav class="breadcrumb">
-              <button class="btn btn-text" data-route="references">&larr; References / 课件资料</button>
-            </nav>
-            <div id="coursewareDetail"></div>
-          </article>
-        </section>
-
-        <section id="view-homework" class="view" data-view="homework" hidden>
-          <article class="panel">
-            <nav class="breadcrumb">
-              <button class="btn btn-text" data-route="courseware" id="homeworkBackBtn">&larr; Back to Courseware / 返回课件</button>
-            </nav>
-            <div id="homeworkDetail"></div>
-          </article>
-        </section>
+        <section id="view-references" class="view" data-view="references" hidden><article class="panel"><h2>References / 课件资料</h2><p class="helper">Deep review materials in one place. Click any item for details and homework.</p><div class="ref-grid" id="coursewareGrid"></div></article></section>
+        <section id="view-courseware" class="view" data-view="courseware" hidden><article class="panel"><nav class="breadcrumb"><button class="btn btn-text" data-route="references">&larr; References / 课件资料</button></nav><div id="coursewareDetail"></div></article></section>
+        <section id="view-homework" class="view" data-view="homework" hidden><article class="panel"><nav class="breadcrumb"><button class="btn btn-text" data-route="courseware" id="homeworkBackBtn">&larr; Back to Courseware / 返回课件</button></nav><div id="homeworkDetail"></div></article></section>
       </main>
     </div>
 
     <script src="./chapter-model.js"></script>
     <script src="./app.js"></script>
+    <script src="./exam.js"></script>
   </body>
 </html>

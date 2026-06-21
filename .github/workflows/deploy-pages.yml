@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r \
-            index.html styles.css app.js chapter-model.js \
+            index.html styles.css app.js exam.js chapter-model.js \
             data homework katex scripts assets \
             _site/
       - name: Upload artifact
