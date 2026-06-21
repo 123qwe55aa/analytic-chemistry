@@ -40,6 +40,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r site/* _site/
+          cp index.html styles.css app.js chapter-model.js _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
