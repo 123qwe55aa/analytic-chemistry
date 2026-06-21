@@ -275,8 +275,8 @@
           metricChip('Missed', summary.missedTotal) +
         '</div>' +
         '<div class="actions">' +
-          '<button class="btn btn-primary" data-chapter-id="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Open Chapter</button>' +
-          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Chapter Cram</button>' +
+          '<button class="btn btn-primary" data-chapter-id="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Open Chapter / 打开章节</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + (hasPractice ? '' : ' disabled') + '>Chapter Cram / 章节冲刺</button>' +
         '</div>' +
       '</article>';
     }).join('');
@@ -288,17 +288,17 @@
     }
     return '<div class="split-grid">' +
       '<article class="panel">' +
-        '<h3>Chapter Tools</h3>' +
+        '<h3>Chapter Tools / 章节工具</h3>' +
         '<p class="helper">Start with the weakest queue or jump into focused practice for this chapter.</p>' +
         '<div class="actions">' +
-          '<button class="btn btn-primary" data-chapter-mode="flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Flashcards</button>' +
-          '<button class="btn btn-ghost" data-chapter-mode="quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Quiz</button>' +
-          '<button class="btn btn-ghost" data-chapter-mode="mistakes">Mistakes</button>' +
-          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Cram</button>' +
+          '<button class="btn btn-primary" data-chapter-mode="flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Flashcards / 卡片记忆</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Quiz / 测验</button>' +
+          '<button class="btn btn-ghost" data-chapter-mode="mistakes">Mistakes / 错题本</button>' +
+          '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Cram / 冲刺</button>' +
         '</div>' +
       '</article>' +
       '<article class="panel">' +
-        '<h3>Chapter Snapshot</h3>' +
+        '<h3>Chapter Snapshot / 章节概览</h3>' +
         '<ul class="stat-list">' +
           '<li><span>Flashcards</span><strong>' + summary.flashcardTotal + '</strong></li>' +
           '<li><span>Quiz Questions</span><strong>' + summary.quizTotal + '</strong></li>' +
@@ -322,7 +322,7 @@
       '<ul class="mistake-list">' + (preview || '<li>No flashcards in this chapter.</li>') + '</ul>' +
       '<div class="actions">' +
         '<button class="btn btn-primary" data-action="chapter-drill-flashcards"' + (summary.flashcardTotal ? '' : ' disabled') + '>Drill Chapter Deck</button>' +
-        '<button class="btn btn-ghost" data-chapter-mode="mistakes">Review Weak Cards</button>' +
+        '<button class="btn btn-ghost" data-chapter-mode="mistakes">Review Weak Cards / 回顾薄弱卡片</button>' +
       '</div>' +
     '</article>';
   }
@@ -339,7 +339,7 @@
       '<p class="helper">Practice only the quiz questions classified under this chapter.</p>' +
       '<ul class="mistake-list">' + (preview || '<li>No quiz questions in this chapter.</li>') + '</ul>' +
       '<div class="actions">' +
-        '<button class="btn btn-primary" data-action="chapter-practice-quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Practice Chapter Quiz</button>' +
+        '<button class="btn btn-primary" data-action="chapter-practice-quiz"' + (summary.quizTotal ? '' : ' disabled') + '>Practice Chapter Quiz / 练习章节测验</button>' +
         '<button class="btn btn-ghost" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Mix Into Cram</button>' +
       '</div>' +
     '</article>';
@@ -414,7 +414,7 @@
           '<h3>Chapter Cram</h3>' +
           '<p class="helper">Mix up to ' + CRAM_FLASHCARD_COUNT + ' flashcards and ' + CRAM_QUIZ_COUNT + ' quiz questions from this chapter.</p>' +
           '<div class="actions">' +
-            '<button class="btn btn-primary" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Start Chapter Cram</button>' +
+            '<button class="btn btn-primary" data-chapter-cram="' + summary.id + '"' + ((summary.flashcardTotal || summary.quizTotal) ? '' : ' disabled') + '>Start Chapter Cram / 开始章节冲刺</button>' +
           '</div>' +
         '</article>'
       );
@@ -924,6 +924,12 @@
 
       var action = target.getAttribute('data-action');
       if (!action) {
+        return;
+      }
+
+      if (action === 'guide-chapter-overview' || action === 'guide-chapter-quiz') {
+        state.chapterMode = action === 'guide-chapter-quiz' ? 'quiz' : 'overview';
+        switchView('chapter');
         return;
       }
 

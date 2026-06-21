@@ -2,6 +2,10 @@
   "title": "Chemistry Quiz",
   "questions": [
     {
+      "id": "q001",
+      "chapter": "solubility",
+      "topic": "Ksp and precipitation",
+      "difficulty": 2,
       "question": "For a sparingly soluble electrolyte of the type $MA_{2}$, such as $CaF_{2}$, how is the molar solubility ($s$) related to the solubility product constant ($K_{sp}^{0}$)?",
       "answerOptions": [
         {
@@ -28,6 +32,10 @@
       "hint": "Consider the stoichiometric coefficients when the solid dissociates into three ions."
     },
     {
+      "id": "q002",
+      "chapter": "solubility",
+      "topic": "Ksp and precipitation",
+      "difficulty": 2,
       "question": "Which phenomenon describes the increase in solubility of a precipitate when a strong electrolyte that does not share a common ion is added to the solution?",
       "answerOptions": [
         {
@@ -54,6 +62,10 @@
       "hint": "Think about how ionic strength influences the activity coefficients of the ions in equilibrium."
     },
     {
+      "id": "q003",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "In a redox titration between $n_{1}Ox_{1} + n_{2}Red_{2} \\rightleftharpoons n_{1}Red_{1} + n_{2}Ox_{2}$, what is the general formula for the potential at the equivalence point ($E_{sp}$)?",
       "answerOptions": [
         {
@@ -80,6 +92,10 @@
       "hint": "The equivalence point potential is a weighted average of the standard potentials based on electron exchange."
     },
     {
+      "id": "q004",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "During the standardization of $Na_{2}S_{2}O_{3}$ using $K_{2}Cr_{2}O_{7}$, why is the solution kept in the dark for several minutes after adding $KI$ and acid?",
       "answerOptions": [
         {
@@ -106,6 +122,10 @@
       "hint": "Consider the potential side reactions involving atmospheric oxygen and iodide ions."
     },
     {
+      "id": "q005",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "Which hybridization and geometry are associated with the $[Ni(CN)_{4}]^{2-}$ complex ion, given its diamagnetic nature?",
       "answerOptions": [
         {
@@ -132,6 +152,10 @@
       "hint": "The lack of unpaired electrons implies a specific rearrangement of the $d$ orbitals."
     },
     {
+      "id": "q006",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "Calculate the theoretical magnetic moment ($\\mu$) for a $V^{3+}$ ion ($d^{2}$ configuration) using the spin-only formula.",
       "answerOptions": [
         {
@@ -158,6 +182,10 @@
       "hint": "Apply the formula $\\mu = \\sqrt{n(n+2)}$ where $n$ is the number of unpaired electrons."
     },
     {
+      "id": "q007",
+      "chapter": "complexation",
+      "topic": "Complexation and EDTA",
+      "difficulty": 2,
       "question": "In complexometric titrations with EDTA, what does the conditional stability constant ($K'_{MY}$) account for that the standard stability constant ($K_{MY}^{0}$) does not?",
       "answerOptions": [
         {
@@ -184,6 +212,10 @@
       "hint": "Think about why the 'effective' stability of a complex changes when the acidity of the solution changes."
     },
     {
+      "id": "q008",
+      "chapter": "complexation",
+      "topic": "Complexation and EDTA",
+      "difficulty": 2,
       "question": "Which reagent is commonly used as a masking agent to prevent $Al^{3+}$ from interfering during an EDTA titration of $Zn^{2+}$ or $Mg^{2+}$?",
       "answerOptions": [
         {
@@ -210,6 +242,10 @@
       "hint": "Look for a ligand that forms an exceptionally stable complex specifically with aluminum ions."
     },
     {
+      "id": "q009",
+      "chapter": "solubility",
+      "topic": "Ksp and precipitation",
+      "difficulty": 2,
       "question": "What happens to the solubility of $AgCl$ if a large excess of $NaCl$ is added to the solution?",
       "answerOptions": [
         {
@@ -236,6 +272,10 @@
       "hint": "Consider the possibility of coordinate bond formation when ligand concentration is very high."
     },
     {
+      "id": "q010",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "In the context of transition metal properties, why do ions like $Sc^{3+}$ and $Zn^{2+}$ typically form colorless aqueous solutions?",
       "answerOptions": [
         {
@@ -262,6 +302,10 @@
       "hint": "Think about the requirements for electronic transitions within the $d$ subshell."
     },
     {
+      "id": "q011",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "Why is $KMnO_{4}$ titration usually performed in a strongly acidic solution ($H_{2}SO_{4}$)?",
       "answerOptions": [
         {
@@ -288,6 +332,10 @@
       "hint": "Consider the different reduction products of the permanganate ion in various pH environments."
     },
     {
+      "id": "q012",
+      "chapter": "complexation",
+      "topic": "Complexation and EDTA",
+      "difficulty": 2,
       "question": "True or False: In a complexometric titration, a 'blocked' indicator occurs when the metal-indicator complex is more stable than the metal-EDTA complex.",
       "answerOptions": [
         {
@@ -304,6 +352,10 @@
       "hint": "Reflect on the relative stability constants required for an indicator to successfully signal the end of a titration."
     },
     {
+      "id": "q013",
+      "chapter": "solubility",
+      "topic": "Ksp and precipitation",
+      "difficulty": 2,
       "question": "Which of the following describes the 'acid effect' on the solubility of $CaC_{2}O_{4}$?",
       "answerOptions": [
         {
@@ -330,6 +382,10 @@
       "hint": "Consider how the anion of a weak acid behaves when the concentration of $H^{+}$ increases."
     },
     {
+      "id": "q014",
+      "chapter": "redox",
+      "topic": "Redox titration and electrochemistry",
+      "difficulty": 2,
       "question": "What is the primary reason that $HgCl_{2}$ has a relatively low melting point and can be purified by sublimation?",
       "answerOptions": [
         {
@@ -356,6 +412,10 @@
       "hint": "Think about the type of bonding (ionic vs. covalent) and the resulting crystal structure."
     },
     {
+      "id": "q015",
+      "chapter": "solubility",
+      "topic": "Ksp and precipitation",
+      "difficulty": 2,
       "question": "For the determination of $Fe^{3+}$ using EDTA, why must the pH be carefully controlled near $1.3$ to $1.8$?",
       "answerOptions": [
         {
