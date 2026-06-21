@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "pretest": "npm run extract:exams",
     "test": "node --test ./*.test.js",
     "extract:exams": "node scripts/extract-exams-from-html.js"
   }
