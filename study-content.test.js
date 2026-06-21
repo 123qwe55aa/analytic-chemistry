@@ -104,11 +104,13 @@ test('exam data schema is stable when extracted exams are present', () => {
     exam.questions.forEach((question) => {
       assert.match(question.id, /^exam-\d{3}-q\d{3}$/);
       assert.ok(typeof question.question === 'string' && question.question.length > 0);
-      assert.ok(Number(question.score) > 0);
+      assert.ok(Number(question.score) >= 0);
       assert.ok(Array.isArray(question.answerOptions));
-      if (question.answerOptions.length) {
-        assert.ok(Array.isArray(question.correctAnswers));
-        assert.ok(question.correctAnswers.length > 0);
+      assert.ok(Array.isArray(question.correctAnswers));
+      assert.ok(typeof question.rawCorrectAnswer === 'string');
+      assert.ok(typeof question.originalText === 'string' && question.originalText.length > 0);
+      if (question.answerOptions.length && question.correctAnswers.length === 0) {
+        assert.equal(question.scoringMode, 'manual');
       }
     });
   });
