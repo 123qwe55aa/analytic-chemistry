@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { classifyStudyItem } = require('../site/chapter-model.js');
+const { classifyStudyItem } = require('../chapter-model.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const TOPICS = {
@@ -58,5 +58,5 @@ function enrich(file, collectionKey, prefix) {
   fs.writeFileSync(filePath, `${JSON.stringify(document, null, 2)}\n`);
 }
 
-enrich('site/data/flashcards.json', 'cards', 'f');
-enrich('site/data/quiz.json', 'questions', 'q');
+enrich('data/flashcards.json', 'cards', 'f');
+enrich('data/quiz.json', 'questions', 'q');
