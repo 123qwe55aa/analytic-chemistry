@@ -10,8 +10,9 @@ function readJson(relativePath) {
 
 function assertMetadata(items, prefix) {
   const ids = new Set();
+  const idPattern = new RegExp(`^${prefix}\\d{3}$`);
   items.forEach((item, index) => {
-    assert.match(item.id, new RegExp(`^${prefix}\d{3}$`));
+    assert.match(item.id, idPattern);
     assert.equal(ids.has(item.id), false, `duplicate id ${item.id}`);
     ids.add(item.id);
     assert.equal(CHAPTER_IDS[item.chapter], true, `${item.id} has invalid chapter`);
