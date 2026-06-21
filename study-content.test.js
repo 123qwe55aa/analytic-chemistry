@@ -75,6 +75,26 @@ test('curated chapter corrections repair known generated misclassifications', ()
   assert.equal(classifyStudyItem(byId.q015), 'complexation');
 });
 
+test('referenced courseware and resource files exist', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  // Extract COURSEWARE_LIST file references
+  const coursewareFiles = [...app.matchAll(/file: '([^']+\.pdf)'/g)].map(m => m[1]);
+  coursewareFiles.forEach(file => {
+    const fullPath = path.join(__dirname, 'assets/pdfs', path.basename(file));
+    assert.ok(fs.existsSync(fullPath), `Missing courseware PDF: ${file} (looked in assets/pdfs/)`);
+  });
+  // Extract extras href references
+  const extrasHrefs = [...app.matchAll(/href: '([^']+)'/g)].map(m => m[1]);
+  extrasHrefs.forEach(href => {
+    const decoded = decodeURIComponent(href);
+    const fullPath = path.join(__dirname, decoded.startsWith('./') ? decoded.slice(2) : decoded);
+    assert.ok(fs.existsSync(fullPath), `Missing extra resource: ${href}`);
+  });
+  // Core data files
+  ['data/flashcards.json', 'data/quiz.json'].forEach(f => {
+    assert.ok(fs.existsSync(path.join(__dirname, f)), `Missing data file: ${f}`);
+  });
+});
 test('dashboard exposes the bilingual four-step study flow', () => {
   const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);

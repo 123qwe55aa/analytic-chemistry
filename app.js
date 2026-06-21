@@ -476,9 +476,8 @@
     var grid = byId('coursewareGrid');
     if (!grid) { return; }
     var extras = [
-      { label: 'Concept Map Image', href: 'assets/Mastering%20Analytical%20Equilibria%20Principles.png', type: 'image' },
       { label: 'Audio Review Podcast', href: 'assets/podcast_analytic_chemistry.mp3', type: 'audio' },
-      { label: 'Analytical Equilibrium Blueprint', href: './Analytical%20Equilibrium%20Blueprint.pdf', type: 'pdf' }
+      { label: 'Analytical Equilibrium Blueprint', href: 'assets/pdfs/Analytical%20Equilibrium%20Blueprint.pdf', type: 'pdf' }
     ];
     var extraHtml = extras.map(function (e) {
       return '<a class=\"ref-item\" href=\"' + e.href + '\" target=\"_blank\" rel=\"noopener\">' + e.label + '</a>';
@@ -534,7 +533,7 @@
             '<li><span>Related Quiz</span><strong>' + relatedQuiz + '</strong></li>' +
           '</ul>' +
           '<div class=\"actions\">' +
-            '<a class=\"btn btn-primary\" href=\"./' + cw.file + '\" target=\"_blank\" rel=\"noopener\">Open PDF / 打开课件</a>' +
+            '<a class="btn btn-primary" href="assets/pdfs/' + cw.file + '" target="_blank" rel="noopener">Open PDF / 打开课件</a>' +
           '</div>' +
         '</article>' +
         '<article class=\"panel\">' +
