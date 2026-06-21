@@ -11,7 +11,7 @@ function readJson(relativePath) {
 function assertMetadata(items, prefix) {
   const ids = new Set();
   items.forEach((item, index) => {
-    assert.match(item.id, new RegExp(`^${prefix}\\d{3}$`));
+    assert.match(item.id, new RegExp(`^${prefix}\d{3}$`));
     assert.equal(ids.has(item.id), false, `duplicate id ${item.id}`);
     ids.add(item.id);
     assert.equal(CHAPTER_IDS[item.chapter], true, `${item.id} has invalid chapter`);
@@ -77,25 +77,43 @@ test('curated chapter corrections repair known generated misclassifications', ()
 
 test('referenced courseware and resource files exist', () => {
   const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
-  // Extract COURSEWARE_LIST file references
   const coursewareFiles = [...app.matchAll(/file: '([^']+\.pdf)'/g)].map(m => m[1]);
   coursewareFiles.forEach(file => {
     const fullPath = path.join(__dirname, 'assets/pdfs', path.basename(file));
     assert.ok(fs.existsSync(fullPath), `Missing courseware PDF: ${file} (looked in assets/pdfs/)`);
   });
-  // Extract extras href references
   const extrasHrefs = [...app.matchAll(/href: '([^']+)'/g)].map(m => m[1]);
   extrasHrefs.forEach(href => {
     const decoded = decodeURIComponent(href);
     const fullPath = path.join(__dirname, decoded.startsWith('./') ? decoded.slice(2) : decoded);
     assert.ok(fs.existsSync(fullPath), `Missing extra resource: ${href}`);
   });
-  // Core data files
-  ['data/flashcards.json', 'data/quiz.json'].forEach(f => {
+  ['data/flashcards.json', 'data/quiz.json', 'data/exams.json'].forEach(f => {
     assert.ok(fs.existsSync(path.join(__dirname, f)), `Missing data file: ${f}`);
   });
 });
-test('dashboard exposes the bilingual four-step study flow', () => {
+
+test('exam data schema is stable when extracted exams are present', () => {
+  const exams = readJson('data/exams.json').exams;
+  assert.ok(Array.isArray(exams));
+  exams.forEach((exam) => {
+    assert.match(exam.id, /^exam-\d{3}$/);
+    assert.ok(typeof exam.title === 'string' && exam.title.length > 0);
+    assert.ok(Array.isArray(exam.questions));
+    exam.questions.forEach((question) => {
+      assert.match(question.id, /^exam-\d{3}-q\d{3}$/);
+      assert.ok(typeof question.question === 'string' && question.question.length > 0);
+      assert.ok(Number(question.score) > 0);
+      assert.ok(Array.isArray(question.answerOptions));
+      if (question.answerOptions.length) {
+        assert.ok(Array.isArray(question.correctAnswers));
+        assert.ok(question.correctAnswers.length > 0);
+      }
+    });
+  });
+});
+
+test('dashboard exposes the bilingual study flow and exam bank shell', () => {
   const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);
   assert.equal((html.match(/class="guide-step"/g) || []).length, 4);
@@ -106,6 +124,10 @@ test('dashboard exposes the bilingual four-step study flow', () => {
   assert.match(html, />Dashboard \/ 首页</);
   assert.match(html, />Flashcards \/ 卡片记忆</);
   assert.match(html, />Quiz \/ 测验</);
+  assert.match(html, />Exam \/ 考试</);
   assert.match(html, />Mistakes \/ 错题本</);
   assert.match(html, />References \/ 课件资料</);
+  assert.match(html, /data-view="exam"/);
+  assert.match(html, /id="examRoot"/);
+  assert.match(html, /\.\/exam\.js/);
 });
