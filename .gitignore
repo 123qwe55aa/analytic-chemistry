@@ -5,8 +5,14 @@
 podcast_segments/
 .worktrees/
 
-# large assets excluded from git
+# node
+node_modules/
+
+# Large assets excluded from git
 *.mp4
 *.m4a
 *.png
 Turning Boiler Scale into Washable Chalk.mp3
+
+# Deployment source: site/ only
+# docs/ is deprecated — use site/
