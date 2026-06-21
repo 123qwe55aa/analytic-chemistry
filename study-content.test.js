@@ -116,6 +116,28 @@ test('exam data schema is stable when extracted exams are present', () => {
   });
 });
 
+test('homework extractor preserves the nested HAc FeS equilibrium question', () => {
+  const exams = readJson('data/exams.json').exams;
+  const homeworkExam = exams.find((exam) => exam.source === 'homework/查看详情.html');
+  assert.ok(homeworkExam, 'expected generated exam from homework/查看详情.html');
+
+  const question = homeworkExam.questions.find((item) => item.question.includes('HAc') && item.question.includes('FeS'));
+  assert.ok(question, 'expected HAc/FeS equilibrium question to be extracted');
+
+  const compactQuestion = question.question.replace(/\s+/g, '');
+  assert.match(compactQuestion, /K_a1/);
+  assert.match(compactQuestion, /K_a2/);
+  assert.match(compactQuestion, /K_sp.*FeS/);
+  assert.match(compactQuestion, /HAc/);
+
+  assert.deepEqual(question.answerOptions.map((option) => option.label), ['A', 'B', 'C', 'D']);
+  assert.ok(question.answerOptions.every((option) => typeof option.originalText === 'string' && option.originalText.length > 0));
+  assert.ok(question.answerOptions.every((option) => typeof option.html === 'string' && option.html.length > 0));
+  assert.deepEqual(question.correctAnswers, ['B']);
+  assert.equal(question.correctAnswer, 'B');
+  assert.equal(question.rawCorrectAnswer, 'B');
+});
+
 test('dashboard exposes the bilingual study flow and exam bank shell', () => {
   const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(html, /Recommended Study Flow \/ 推荐学习流程/);
