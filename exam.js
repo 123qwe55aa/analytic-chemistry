@@ -78,9 +78,23 @@
   }
 
   function typeset() {
-    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-      window.MathJax.typesetPromise().catch(function () {});
+    var root = byId('examRoot');
+    if (!root) return;
+    if (typeof window.renderMathInElement !== 'function') {
+      setTimeout(function () {
+        if (typeof window.renderMathInElement === 'function') typeset();
+      }, 100);
+      return;
     }
+    window.renderMathInElement(root, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '\\[', right: '\\]', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false
+    });
   }
 
   function selectedLabels(question) {
