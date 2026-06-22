@@ -7,9 +7,9 @@ import { config } from "./config.js";
 import { hermesClient } from "./hermes/client.js";
 import { listDir as listDirLocal, readFile as readFileLocal } from "./local/fs.js";
 import { runCommand as runCommandLocal } from "./local/shell.js";
-import { audit, resolveWorkspacePath } from "./sandbox.js";
+import { audit, assertSafeCommand, resolveWorkspacePath } from "./sandbox.js";
 
-function asText(value: unknown) {
+function asText(value: unknown, isError = false) {
   const text = typeof value === "string" ? value : JSON.stringify(value, null, 2);
   return {
     content: [
@@ -17,7 +17,8 @@ function asText(value: unknown) {
         type: "text" as const,
         text
       }
-    ]
+    ],
+    isError
   };
 }
 
@@ -30,7 +31,7 @@ async function callTool<T>(event: string, fn: () => Promise<T>) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     audit(event, { status: "error", error: message });
-    return asText({ ok: false, error: message });
+    return asText({ ok: false, error: message }, true);
   }
 }
 
@@ -110,17 +111,18 @@ server.registerTool(
     title: "Run Command",
     description: "Run an allowlisted command inside WORKSPACE_ROOT. Dangerous commands are blocked.",
     inputSchema: {
-      command: z.string().describe("Command to execute. First token must be allowlisted."),
+      command: z.string().describe("Command to execute. First token and risky subcommands must be allowlisted."),
       cwd: z.string().default(".").describe("Workspace-relative working directory")
     }
   },
   async ({ command, cwd }) =>
     callTool("run_command", async () => {
-      const resolvedCwd = resolveWorkspacePath(cwd);
+      const safeCommand = assertSafeCommand(command);
+      resolveWorkspacePath(cwd);
       if (config.hermesMode === "http") {
-        return hermesClient.runCommand(command, resolvedCwd);
+        return hermesClient.runCommand(safeCommand.command, cwd);
       }
-      return runCommandLocal(command, cwd);
+      return runCommandLocal(safeCommand.command, cwd);
     })
 );
 
